@@ -52,7 +52,6 @@
             100% { transform: translateY(0); }
         }
 
-        /* Scrollbar hiding for cleaner look */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -73,8 +72,7 @@
                 <h1 class="font-bold text-white tracking-wide">GameDeck</h1>
             </div>
             <div class="flex items-center gap-3">
-                <span class="text-xs bg-indigo-900 text-indigo-300 px-2 py-0.5 rounded-full">v3.2</span>
-                <!-- Mobile Menu Button -->
+                <span class="text-xs bg-indigo-900 text-indigo-300 px-2 py-0.5 rounded-full">v3.3</span>
                 <button onclick="app.toggleMobileMenu()" class="md:hidden text-slate-400 hover:text-white transition-colors p-1">
                     <i data-lucide="menu" id="menu-icon" class="w-6 h-6"></i>
                 </button>
@@ -98,7 +96,7 @@
                 </button>
             </nav>
 
-            <!-- Deck Settings (Now visible in menu on mobile) -->
+            <!-- Deck Settings -->
             <div class="mt-auto p-4 border-t border-slate-800 overflow-y-auto no-scrollbar pb-8 md:pb-4">
                 <h3 class="text-xs font-bold uppercase text-slate-500 mb-3 tracking-wider">Active Decks</h3>
                 <div class="space-y-2">
@@ -142,7 +140,6 @@
                 <!-- Card render here -->
             </div>
 
-            <!-- Gesture hints for mobile -->
             <p class="md:hidden text-xs text-indigo-400 mt-4 md:mt-6 flex items-center justify-center gap-4 opacity-70">
                 <span>← Discard</span>
                 <span>•</span>
@@ -180,7 +177,7 @@
                 <!-- Saved cards injected here -->
             </div>
             <div id="empty-state" class="hidden text-center py-20 border-2 border-dashed border-slate-300 rounded-xl">
-                <div class="text-4xl mb-4">📭</div>
+                <div class="text-4xl mb-4">🫥</div>
                 <p class="text-slate-500 font-medium">No cards saved yet.</p>
                 <button onclick="app.setView('draw')" class="text-indigo-600 font-bold text-sm mt-2 hover:underline">Go draw some!</button>
             </div>
@@ -198,251 +195,246 @@
     </template>
 
     <script>
-        // --- Data ---
-        // DECK 1: Creative Ways
+        // --- Data Definitions (Expanded with more examples) ---
+        
         const DECK_1 = [
-            { id: '1-h2', deck: 1, suit: 'hearts', rank: '2', visual: '🕹️', title: 'Combine Games', concept: 'Mix aspects from different games.', example: 'Monopoly GO! (Monopoly + Coin Master)' },
-            { id: '1-h3', deck: 1, suit: 'hearts', rank: '3', visual: '🌀', title: 'Mix Elements', concept: 'Blend mechanics for hybrid synergy.', example: 'SSSnaker (Snake + Archero)' },
-            { id: '1-h4', deck: 1, suit: 'hearts', rank: '4', visual: '🌐', title: 'Simplify', concept: 'Simplify mid-core for casuals.', example: 'Free Fire (PUBG Mobile)' },
-            { id: '1-h5', deck: 1, suit: 'hearts', rank: '5', visual: '⚙️', title: 'Improve Concepts', concept: 'Polish unpolished genres.', example: 'Lethal Company (Co-op Horror)' },
-            { id: '1-h6', deck: 1, suit: 'hearts', rank: '6', visual: '🔄', title: 'Adapt Platform', concept: 'Transfer to new platforms.', example: 'Stumble Guys (Mobile Fall Guys)' },
-            { id: '1-h7', deck: 1, suit: 'hearts', rank: '7', visual: '🤪', title: 'Absurdity', concept: 'Combine the unexpected.', example: 'Palworld (Pokémon + Guns)' },
-            { id: '1-h8', deck: 1, suit: 'hearts', rank: '8', visual: '🎥', title: 'Iconic Moments', concept: 'Famous scenes as gameplay.', example: 'SUPERHOT (Matrix)' },
-            { id: '1-h9', deck: 1, suit: 'hearts', rank: '9', visual: '📺', title: 'Fake Ads', concept: 'Make fake ads real.', example: 'Project Makeover' },
-            { id: '1-h10', deck: 1, suit: 'hearts', rank: '10', visual: '🏰', title: 'History', concept: 'Rich cultural themes.', example: 'Kingdom Come: Deliverance' },
-            { id: '1-hj', deck: 1, suit: 'hearts', rank: 'J', visual: '❤️', title: 'Emotions', concept: 'Evoke specific feelings.', example: 'Journey' },
-            { id: '1-hq', deck: 1, suit: 'hearts', rank: 'Q', visual: '🧩', title: '4th Wall', concept: 'Meta-narratives.', example: 'The Stanley Parable' },
-            { id: '1-hk', deck: 1, suit: 'hearts', rank: 'K', visual: '🚀', title: 'New Tech', concept: 'Leverage emerging tech.', example: 'Beat Saber (VR)' },
-            { id: '1-ha', deck: 1, suit: 'hearts', rank: 'A', visual: '🌟', title: 'Fantasies', concept: 'Fulfill childhood dreams.', example: 'Sea of Thieves (Pirates)' },
-            { id: '1-s2', deck: 1, suit: 'spades', rank: '2', visual: '🛠️', title: 'Game Mods', concept: 'Mods into standalone.', example: 'Dota 2' },
-            { id: '1-s3', deck: 1, suit: 'spades', rank: '3', visual: '🌍', title: 'Real Life', concept: 'Everyday sensations.', example: 'Papers, Please' },
-            { id: '1-s4', deck: 1, suit: 'spades', rank: '4', visual: '🔄', title: 'Inversion', concept: 'Flip the norm.', example: 'Choo-Choo Charles' },
-            { id: '1-s5', deck: 1, suit: 'spades', rank: '5', visual: '🎲', title: 'Tabletop', concept: 'Board games to digital.', example: 'Among Us (Mafia)' },
-            { id: '1-s6', deck: 1, suit: 'spades', rank: '6', visual: '🔄', title: 'Role Reversal', concept: 'Control world, not hero.', example: 'Loop Hero' },
-            { id: '1-s7', deck: 1, suit: 'spades', rank: '7', visual: '⏳', title: 'Game Jams', concept: 'Strict constraints.', example: 'Goat Simulator' },
-            { id: '1-s8', deck: 1, suit: 'spades', rank: '8', visual: '🔧', title: 'Reverse Engineer', concept: 'Fix genre frustrations.', example: 'Stardew Valley' },
-            { id: '1-s9', deck: 1, suit: 'spades', rank: '9', visual: '📖', title: 'Proc. Story', concept: 'Generated narrative arcs.', example: 'Wildermyth' },
-            { id: '1-s10', deck: 1, suit: 'spades', rank: '10', visual: '🍌', title: 'Physics Comedy', concept: 'Wobbly physics humor.', example: 'Human: Fall Flat' },
-            { id: '1-sj', deck: 1, suit: 'spades', rank: 'J', visual: '🎵', title: 'Rhythm Action', concept: 'Rhythm in non-music genres.', example: 'Crypt of the NecroDancer' },
-            { id: '1-sq', deck: 1, suit: 'spades', rank: 'Q', visual: '🏭', title: 'Automation', concept: 'Complex engineering.', example: 'Factorio' },
-            { id: '1-sk', deck: 1, suit: 'spades', rank: 'K', visual: '🖼️', title: 'Art Gameplay', concept: 'Visual medium as mechanic.', example: 'Gorogoa' },
-            { id: '1-sa', deck: 1, suit: 'spades', rank: 'A', visual: '🦇', title: 'Audio Nav', concept: 'See with sound.', example: 'Dark Echo' },
-            { id: '1-d2', deck: 1, suit: 'diamonds', rank: '2', visual: '⚖️', title: 'Asymmetric', concept: 'Teams of different sizes.', example: 'Dead by Daylight' },
-            { id: '1-d3', deck: 1, suit: 'diamonds', rank: '3', visual: '⏳', title: 'Time Control', concept: 'Rewind/Pause time.', example: 'Braid' },
-            { id: '1-d4', deck: 1, suit: 'diamonds', rank: '4', visual: '👁️', title: 'Perspective', concept: 'Optical illusions.', example: 'Superliminal' },
-            { id: '1-d5', deck: 1, suit: 'diamonds', rank: '5', visual: '🧠', title: 'Knowledge', concept: 'Player levels up, not char.', example: 'Outer Wilds' },
-            { id: '1-d6', deck: 1, suit: 'diamonds', rank: '6', visual: '❄️', title: 'Moral Survival', concept: 'Impossible ethical choices.', example: 'Frostpunk' },
-            { id: '1-d7', deck: 1, suit: 'diamonds', rank: '7', visual: '💀', title: 'High Lethality', concept: 'One-hit kills.', example: 'Hotline Miami' },
-            { id: '1-d8', deck: 1, suit: 'diamonds', rank: '8', visual: '🧛', title: 'Reverse Bullet Hell', concept: 'You are the swarm.', example: 'Vampire Survivors' },
-            { id: '1-d9', deck: 1, suit: 'diamonds', rank: '9', visual: '💻', title: 'UI Narrative', concept: 'Game in an OS.', example: 'Hypnospace Outlaw' },
-            { id: '1-d10', deck: 1, suit: 'diamonds', rank: '10', visual: '🕰️', title: 'Alt History', concept: 'Change one event.', example: 'Wolfenstein' },
-            { id: '1-dj', deck: 1, suit: 'diamonds', rank: 'J', visual: '⚡', title: 'Modern Myth', concept: 'Myths with modern vibes.', example: 'Hades' },
-            { id: '1-dq', deck: 1, suit: 'diamonds', rank: 'Q', visual: '☕', title: 'Cozy', concept: 'Low stakes, high comfort.', example: 'Unpacking' },
-            { id: '1-dk', deck: 1, suit: 'diamonds', rank: 'K', visual: '🚪', title: 'Liminal Horror', concept: 'Empty, familiar spaces.', example: 'The Exit 8' },
-            { id: '1-da', deck: 1, suit: 'diamonds', rank: 'A', visual: '⚽', title: 'Sports Hybrid', concept: 'Sport + Absurdity.', example: 'Rocket League' },
-            { id: '1-c2', deck: 1, suit: 'clubs', rank: '2', visual: '🗣️', title: 'Non-Violent', concept: 'Conflict via dialogue.', example: 'Disco Elysium' },
-            { id: '1-c3', deck: 1, suit: 'clubs', rank: '3', visual: '🏠', title: 'Env. Narrative', concept: 'Story via objects.', example: 'Edith Finch' },
-            { id: '1-c4', deck: 1, suit: 'clubs', rank: '4', visual: '🧱', title: 'Destruction', concept: 'Breaking is solving.', example: 'Teardown' },
-            { id: '1-c5', deck: 1, suit: 'clubs', rank: '5', visual: '🏗️', title: 'Construction', concept: 'Build tools to solve.', example: 'Besiege' },
-            { id: '1-c6', deck: 1, suit: 'clubs', rank: '6', visual: '📎', title: 'Unfolding Idle', concept: 'Clicker reveals story.', example: 'Universal Paperclips' },
-            { id: '1-c7', deck: 1, suit: 'clubs', rank: '7', visual: '🔴', title: 'Streamer API', concept: 'Chat affects game.', example: 'Cult of the Lamb' },
-            { id: '1-c8', deck: 1, suit: 'clubs', rank: '8', visual: '⌨️', title: 'Typing', concept: 'Typing as combat.', example: 'Typing of the Dead' },
-            { id: '1-c9', deck: 1, suit: 'clubs', rank: '9', visual: '🎨', title: 'Color', concept: 'Matching colors mechanics.', example: 'Splatoon' },
-            { id: '1-c10', deck: 1, suit: 'clubs', rank: '10', visual: '🌌', title: 'Gravity', concept: 'Change gravity direction.', example: 'Gravity Rush' },
-            { id: '1-cj', deck: 1, suit: 'clubs', rank: 'J', visual: '🖥️', title: 'Prog. Logic', concept: 'Write code to automate.', example: 'Baba Is You' },
-            { id: '1-cq', deck: 1, suit: 'clubs', rank: 'Q', visual: '📸', title: 'Photography', concept: 'Camera as weapon.', example: 'Pokemon Snap' },
-            { id: '1-ck', deck: 1, suit: 'clubs', rank: 'K', visual: '🐜', title: 'Living World', concept: 'World runs itself.', example: 'Dwarf Fortress' },
-            { id: '1-ca', deck: 1, suit: 'clubs', rank: 'A', visual: '🪿', title: 'Stealth Comedy', concept: 'Mischief not murder.', example: 'Untitled Goose Game' },
-            { id: '1-joker', deck: 1, suit: 'joker', rank: '★', visual: '🎞️', title: 'Nostalgia', concept: 'Draw on beloved past media.', example: 'Cuphead' },
+            { id: '1-h2', deck: 1, suit: 'hearts', rank: '2', visual: '🕹️', title: 'Combine Games', concept: 'Mix aspects from different games.', example: 'Monopoly GO!, Palworld, Craftopia' },
+            { id: '1-h3', deck: 1, suit: 'hearts', rank: '3', visual: '🌀', title: 'Mix Elements', concept: 'Blend mechanics for hybrid synergy.', example: 'SSSnaker, Archero, Puzzle & Dragons' },
+            { id: '1-h4', deck: 1, suit: 'hearts', rank: '4', visual: '🌐', title: 'Simplify', concept: 'Simplify mid-core for casuals.', example: 'Free Fire, Brawl Stars, Marvel Snap' },
+            { id: '1-h5', deck: 1, suit: 'hearts', rank: '5', visual: '⚙️', title: 'Improve Concepts', concept: 'Polish unpolished genres.', example: 'Lethal Company, Phasmophobia, Stardew Valley' },
+            { id: '1-h6', deck: 1, suit: 'hearts', rank: '6', visual: '🔄', title: 'Adapt Platform', concept: 'Transfer to new platforms.', example: 'Stumble Guys, Among Us VR, Wild Rift' },
+            { id: '1-h7', deck: 1, suit: 'hearts', rank: '7', visual: '🤪', title: 'Absurdity', concept: 'Combine the unexpected.', example: 'Palworld, Goat Simulator, Deer Simulator' },
+            { id: '1-h8', deck: 1, suit: 'hearts', rank: '8', visual: '🎥', title: 'Iconic Moments', concept: 'Famous scenes as gameplay.', example: 'SUPERHOT, Uncharted, Max Payne' },
+            { id: '1-h9', deck: 1, suit: 'hearts', rank: '9', visual: '📺', title: 'Fake Ads', concept: 'Make fake ads real.', example: 'Project Makeover, Hero Wars, Last War' },
+            { id: '1-h10', deck: 1, suit: 'hearts', rank: '10', visual: '🏰', title: 'History', concept: 'Rich cultural themes.', example: 'Kingdom Come, Assassin\'s Creed, Ghost of Tsushima' },
+            { id: '1-hj', deck: 1, suit: 'hearts', rank: 'J', visual: '❤️', title: 'Emotions', concept: 'Evoke specific feelings.', example: 'Journey, Spiritfarer, Before Your Eyes' },
+            { id: '1-hq', deck: 1, suit: 'hearts', rank: 'Q', visual: '🧩', title: '4th Wall', concept: 'Meta-narratives.', example: 'Stanley Parable, Doki Doki LC, Inscryption' },
+            { id: '1-hk', deck: 1, suit: 'hearts', rank: 'K', visual: '🚀', title: 'New Tech', concept: 'Leverage emerging tech.', example: 'Beat Saber, Pokemon GO, Half-Life Alyx' },
+            { id: '1-ha', deck: 1, suit: 'hearts', rank: 'A', visual: '🌟', title: 'Fantasies', concept: 'Fulfill childhood dreams.', example: 'Sea of Thieves, PowerWash Sim, Sims 4' },
+            
+            { id: '1-s2', deck: 1, suit: 'spades', rank: '2', visual: '🛠️', title: 'Game Mods', concept: 'Mods into standalone.', example: 'Dota 2, Counter-Strike, PUBG' },
+            { id: '1-s3', deck: 1, suit: 'spades', rank: '3', visual: '🌍', title: 'Real Life', concept: 'Everyday sensations.', example: 'Papers Please, Unpacking, Cooking Mama' },
+            { id: '1-s4', deck: 1, suit: 'spades', rank: '4', visual: '🔄', title: 'Inversion', concept: 'Flip the norm.', example: 'Choo-Choo Charles, Carrion, Reverse Horror' },
+            { id: '1-s5', deck: 1, suit: 'spades', rank: '5', visual: '🎲', title: 'Tabletop', concept: 'Board games to digital.', example: 'Among Us (Mafia), Baldur\'s Gate 3, Hearthstone' },
+            { id: '1-s6', deck: 1, suit: 'spades', rank: '6', visual: '🔄', title: 'Role Reversal', concept: 'Control world, not hero.', example: 'Loop Hero, Dungeon Keeper, Plague Inc.' },
+            { id: '1-s7', deck: 1, suit: 'spades', rank: '7', visual: '⏳', title: 'Game Jams', concept: 'Strict constraints.', example: 'Goat Simulator, Superhot, Baba Is You' },
+            { id: '1-s8', deck: 1, suit: 'spades', rank: '8', visual: '🔧', title: 'Reverse Engineer', concept: 'Fix genre frustrations.', example: 'Stardew Valley, Cities: Skylines, Planet Coaster' },
+            { id: '1-s9', deck: 1, suit: 'spades', rank: '9', visual: '📖', title: 'Proc. Story', concept: 'Generated narrative arcs.', example: 'Wildermyth, Rimworld, Dwarf Fortress' },
+            { id: '1-s10', deck: 1, suit: 'spades', rank: '10', visual: '🍌', title: 'Physics Comedy', concept: 'Wobbly physics humor.', example: 'Human: Fall Flat, Gang Beasts, QWOP' },
+            { id: '1-sj', deck: 1, suit: 'spades', rank: 'J', visual: '🎵', title: 'Rhythm Action', concept: 'Rhythm in non-music genres.', example: 'Crypt of NecroDancer, Metal Hellsinger, Hi-Fi Rush' },
+            { id: '1-sq', deck: 1, suit: 'spades', rank: 'Q', visual: '🏭', title: 'Automation', concept: 'Complex engineering.', example: 'Factorio, Satisfactory, Mindustry' },
+            { id: '1-sk', deck: 1, suit: 'spades', rank: 'K', visual: '🖼️', title: 'Art Gameplay', concept: 'Visual medium as mechanic.', example: 'Gorogoa, Viewfinder, Chicory' },
+            { id: '1-sa', deck: 1, suit: 'spades', rank: 'A', visual: '🦇', title: 'Audio Nav', concept: 'See with sound.', example: 'Dark Echo, Blind Drive, The Vale' },
+            
+            { id: '1-d2', deck: 1, suit: 'diamonds', rank: '2', visual: '⚖️', title: 'Asymmetric', concept: 'Teams of different sizes.', example: 'Dead by Daylight, Evolve, Among Us' },
+            { id: '1-d3', deck: 1, suit: 'diamonds', rank: '3', visual: '⏳', title: 'Time Control', concept: 'Rewind/Pause time.', example: 'Braid, Superhot, Prince of Persia' },
+            { id: '1-d4', deck: 1, suit: 'diamonds', rank: '4', visual: '👁️', title: 'Perspective', concept: 'Optical illusions.', example: 'Superliminal, Monument Valley, Fez' },
+            { id: '1-d5', deck: 1, suit: 'diamonds', rank: '5', visual: '🧠', title: 'Knowledge', concept: 'Player levels up, not char.', example: 'Outer Wilds, Tunic, Return of Obra Dinn' },
+            { id: '1-d6', deck: 1, suit: 'diamonds', rank: '6', visual: '❄️', title: 'Moral Survival', concept: 'Impossible ethical choices.', example: 'Frostpunk, This War of Mine, Papers Please' },
+            { id: '1-d7', deck: 1, suit: 'diamonds', rank: '7', visual: '💀', title: 'High Lethality', concept: 'One-hit kills.', example: 'Hotline Miami, Ghostrunner, Katana Zero' },
+            { id: '1-d8', deck: 1, suit: 'diamonds', rank: '8', visual: '🧛', title: 'Reverse Bullet Hell', concept: 'You are the swarm.', example: 'Vampire Survivors, Brotato, 20 Minutes Till Dawn' },
+            { id: '1-d9', deck: 1, suit: 'diamonds', rank: '9', visual: '💻', title: 'UI Narrative', concept: 'Game in an OS.', example: 'Hypnospace Outlaw, Emily is Away, Orwell' },
+            { id: '1-d10', deck: 1, suit: 'diamonds', rank: '10', visual: '🕰️', title: 'Alt History', concept: 'Change one event.', example: 'Wolfenstein, Fallout, Atomic Heart' },
+            { id: '1-dj', deck: 1, suit: 'diamonds', rank: 'J', visual: '⚡', title: 'Modern Myth', concept: 'Myths with modern vibes.', example: 'Hades, Percy Jackson, American Gods' },
+            { id: '1-dq', deck: 1, suit: 'diamonds', rank: 'Q', visual: '☕', title: 'Cozy', concept: 'Low stakes, high comfort.', example: 'Unpacking, Coffee Talk, A Short Hike' },
+            { id: '1-dk', deck: 1, suit: 'diamonds', rank: 'K', visual: '🚪', title: 'Liminal Horror', concept: 'Empty, familiar spaces.', example: 'The Exit 8, Poolrooms, Superliminal' },
+            { id: '1-da', deck: 1, suit: 'diamonds', rank: 'A', visual: '⚽', title: 'Sports Hybrid', concept: 'Sport + Absurdity.', example: 'Rocket League, Golf Story, What the Golf?' },
+            
+            { id: '1-c2', deck: 1, suit: 'clubs', rank: '2', visual: '🗣️', title: 'Non-Violent', concept: 'Conflict via dialogue.', example: 'Disco Elysium, Undertale, Signs of the Sojourner' },
+            { id: '1-c3', deck: 1, suit: 'clubs', rank: '3', visual: '🏠', title: 'Env. Narrative', concept: 'Story via objects.', example: 'Edith Finch, Gone Home, Bioshock' },
+            { id: '1-c4', deck: 1, suit: 'clubs', rank: '4', visual: '🧱', title: 'Destruction', concept: 'Breaking is solving.', example: 'Teardown, Red Faction, Besiege' },
+            { id: '1-c5', deck: 1, suit: 'clubs', rank: '5', visual: '🏗️', title: 'Construction', concept: 'Build tools to solve.', example: 'Besiege, Bridge Constructor, TotK' },
+            { id: '1-c6', deck: 1, suit: 'clubs', rank: '6', visual: '📎', title: 'Unfolding Idle', concept: 'Clicker reveals story.', example: 'Universal Paperclips, Candy Box, A Dark Room' },
+            { id: '1-c7', deck: 1, suit: 'clubs', rank: '7', visual: '🔴', title: 'Streamer API', concept: 'Chat affects game.', example: 'Cult of the Lamb, Twitch Plays Pokemon, Dead Cells' },
+            { id: '1-c8', deck: 1, suit: 'clubs', rank: '8', visual: '⌨️', title: 'Typing', concept: 'Typing as combat.', example: 'Typing of the Dead, Epistory, Textorcist' },
+            { id: '1-c9', deck: 1, suit: 'clubs', rank: '9', visual: '🎨', title: 'Color', concept: 'Matching colors mechanics.', example: 'Splatoon, Hue, Chicory' },
+            { id: '1-c10', deck: 1, suit: 'clubs', rank: '10', visual: '🌌', title: 'Gravity', concept: 'Change gravity direction.', example: 'Gravity Rush, Super Mario Galaxy, VVVVVV' },
+            { id: '1-cj', deck: 1, suit: 'clubs', rank: 'J', visual: '🖥️', title: 'Prog. Logic', concept: 'Write code to automate.', example: 'Baba Is You, Human Resource Machine, Screeps' },
+            { id: '1-cq', deck: 1, suit: 'clubs', rank: 'Q', visual: '📸', title: 'Photography', concept: 'Camera as weapon.', example: 'Pokemon Snap, Fatal Frame, Umurangi Generation' },
+            { id: '1-ck', deck: 1, suit: 'clubs', rank: 'K', visual: '🐜', title: 'Living World', concept: 'World runs itself.', example: 'Dwarf Fortress, Rain World, Kenshi' },
+            { id: '1-ca', deck: 1, suit: 'clubs', rank: 'A', visual: '🪿', title: 'Stealth Comedy', concept: 'Mischief not murder.', example: 'Untitled Goose Game, Octodad, Goat Simulator' },
+            
+            { id: '1-joker', deck: 1, suit: 'joker', rank: '★', visual: '🎞️', title: 'Nostalgia', concept: 'Draw on beloved past media.', example: 'Cuphead, Shovel Knight, Sea of Stars' },
         ];
 
-        // DECK 2: Advanced Mechanics
         const DECK_2 = [
-            { id: '2-h2', deck: 2, suit: 'hearts', rank: '2', visual: '🤝', title: 'Companion', concept: 'AI partner bond.', example: 'BioShock Infinite' },
-            { id: '2-h3', deck: 2, suit: 'hearts', rank: '3', visual: '⚔️', title: 'Rival', concept: 'Recurring antagonist.', example: 'Pokémon' },
-            { id: '2-h4', deck: 2, suit: 'hearts', rank: '4', visual: '👥', title: 'Ensemble', concept: 'Group dynamics.', example: 'Mass Effect' },
-            { id: '2-h5', deck: 2, suit: 'hearts', rank: '5', visual: '🤥', title: 'Unreliable', concept: 'Lying narrator.', example: 'Spec Ops: The Line' },
-            { id: '2-h6', deck: 2, suit: 'hearts', rank: '6', visual: '♾️', title: 'Time Loop', concept: 'Relive and learn.', example: '12 Minutes' },
-            { id: '2-h7', deck: 2, suit: 'hearts', rank: '7', visual: '🔍', title: 'Whodunit', concept: 'Solve a crime.', example: 'Obra Dinn' },
-            { id: '2-h8', deck: 2, suit: 'hearts', rank: '8', visual: '💘', title: 'Romance', concept: 'Relationships.', example: 'Stardew Valley' },
-            { id: '2-h9', deck: 2, suit: 'hearts', rank: '9', visual: '🎭', title: 'Tragedy', concept: 'Loss and sacrifice.', example: 'Last of Us Part II' },
-            { id: '2-h10', deck: 2, suit: 'hearts', rank: '10', visual: '🤡', title: 'Satire', concept: 'Social commentary.', example: 'Helldivers 2' },
-            { id: '2-hj', deck: 2, suit: 'hearts', rank: 'J', visual: '😶', title: 'Silent Hero', concept: 'Player projection.', example: 'Half-Life' },
-            { id: '2-hq', deck: 2, suit: 'hearts', rank: 'Q', visual: '⚖️', title: 'Moral Gray', concept: 'No good or evil.', example: 'Witcher 3' },
-            { id: '2-hk', deck: 2, suit: 'hearts', rank: 'K', visual: '🌲', title: 'Branching', concept: 'Massive variations.', example: 'Detroit: Become Human' },
-            { id: '2-ha', deck: 2, suit: 'hearts', rank: 'A', visual: '🎬', title: 'Director AI', concept: 'Dynamic pacing.', example: 'Left 4 Dead 2' },
-            { id: '2-s2', deck: 2, suit: 'spades', rank: '2', visual: '🃏', title: 'Deckbuilder', concept: 'Card-based combat.', example: 'Slay the Spire' },
-            { id: '2-s3', deck: 2, suit: 'spades', rank: '3', visual: '🚁', title: 'Extraction', concept: 'High stakes escape.', example: 'Tarkov' },
-            { id: '2-s4', deck: 2, suit: 'spades', rank: '4', visual: '🛡️', title: 'Parry', concept: 'Defense is offense.', example: 'Sekiro' },
-            { id: '2-s5', deck: 2, suit: 'spades', rank: '5', visual: '🥊', title: 'Combo', concept: 'Chain attacks.', example: 'Devil May Cry' },
-            { id: '2-s6', deck: 2, suit: 'spades', rank: '6', visual: '🪝', title: 'Grapple', concept: 'Vertical mobility.', example: 'Spider-Man' },
-            { id: '2-s7', deck: 2, suit: 'spades', rank: '7', visual: '🦖', title: 'Tamer', concept: 'Capture enemies.', example: 'Palworld' },
-            { id: '2-s8', deck: 2, suit: 'spades', rank: '8', visual: '👻', title: 'Possession', concept: 'Control enemies.', example: 'Mario Odyssey' },
-            { id: '2-s9', deck: 2, suit: 'spades', rank: '9', visual: '🧟', title: 'Horde', concept: 'Overwhelming numbers.', example: 'Days Gone' },
-            { id: '2-s10', deck: 2, suit: 'spades', rank: '10', visual: '⏱️', title: 'Speedrun', concept: 'Optimization.', example: 'Neon White' },
-            { id: '2-sj', deck: 2, suit: 'spades', rank: 'J', visual: '💰', title: 'Heist', concept: 'Plan and execute.', example: 'Payday 2' },
-            { id: '2-sq', deck: 2, suit: 'spades', rank: 'Q', visual: '🤺', title: 'Duel', concept: '1v1 Spacing.', example: 'Nidhogg' },
-            { id: '2-sk', deck: 2, suit: 'spades', rank: 'K', visual: '🐜', title: 'Size Shift', concept: 'Scale mechanics.', example: 'Grounded' },
-            { id: '2-sa', deck: 2, suit: 'spades', rank: 'A', visual: '🌑', title: 'Shadow', concept: 'Light stealth.', example: 'Thief' },
-            { id: '2-d2', deck: 2, suit: 'diamonds', rank: '2', visual: '🔄', title: 'Roguelite', concept: 'Runs with upgrades.', example: 'Hades' },
-            { id: '2-d3', deck: 2, suit: 'diamonds', rank: '3', visual: '🎰', title: 'Gacha', concept: 'Random rewards.', example: 'Genshin Impact' },
-            { id: '2-d4', deck: 2, suit: 'diamonds', rank: '4', visual: '📈', title: 'Prestige', concept: 'Reset for power.', example: 'Cookie Clicker' },
-            { id: '2-d5', deck: 2, suit: 'diamonds', rank: '5', visual: '⛏️', title: 'Crafting', concept: 'Gather > Craft.', example: 'Minecraft' },
-            { id: '2-d6', deck: 2, suit: 'diamonds', rank: '6', visual: '💹', title: 'Player Market', concept: 'Trading economy.', example: 'EVE Online' },
-            { id: '2-d7', deck: 2, suit: 'diamonds', rank: '7', visual: '🦋', title: 'Collection', concept: 'Fill the museum.', example: 'Animal Crossing' },
-            { id: '2-d8', deck: 2, suit: 'diamonds', rank: '8', visual: '🎟️', title: 'Battle Pass', concept: 'Seasonal tracks.', example: 'Fortnite' },
-            { id: '2-d9', deck: 2, suit: 'diamonds', rank: '9', visual: '✏️', title: 'Level Editor', concept: 'UGC Tools.', example: 'Mario Maker' },
-            { id: '2-d10', deck: 2, suit: 'diamonds', rank: '10', visual: '📜', title: 'Wiki-Bait', concept: 'Obscure lore.', example: 'Tunic' },
-            { id: '2-dj', deck: 2, suit: 'diamonds', rank: 'J', visual: '📊', title: 'Min-Max', concept: 'Deep stats.', example: 'Path of Exile' },
-            { id: '2-dq', deck: 2, suit: 'diamonds', rank: 'Q', visual: '📅', title: 'Daily', concept: 'One challenge/day.', example: 'Wordle' },
-            { id: '2-dk', deck: 2, suit: 'diamonds', rank: 'K', visual: '📺', title: 'Episodic', concept: 'Released chapters.', example: 'Walking Dead' },
-            { id: '2-da', deck: 2, suit: 'diamonds', rank: 'A', visual: '🕵️', title: 'ARG', concept: 'Reality blending.', example: 'Inscryption' },
-            { id: '2-c2', deck: 2, suit: 'clubs', rank: '2', visual: '🔥', title: 'Element', concept: 'Chemistry systems.', example: 'Breath of the Wild' },
-            { id: '2-c3', deck: 2, suit: 'clubs', rank: '3', visual: '👽', title: 'Stalker AI', concept: 'Hunting enemy.', example: 'Alien: Isolation' },
-            { id: '2-c4', deck: 2, suit: 'clubs', rank: '4', visual: '🕳️', title: 'Deformable', concept: 'Digging terrain.', example: 'Deep Rock Galactic' },
-            { id: '2-c5', deck: 2, suit: 'clubs', rank: '5', visual: '🌊', title: 'Fluid', concept: 'Liquid physics.', example: 'Mario Sunshine' },
-            { id: '2-c6', deck: 2, suit: 'clubs', rank: '6', visual: '🌀', title: 'Portal', concept: 'Non-Euclidean.', example: 'Portal' },
-            { id: '2-c7', deck: 2, suit: 'clubs', rank: '7', visual: '🌗', title: 'Dual World', concept: 'Dimension swap.', example: 'Titanfall 2' },
-            { id: '2-c8', deck: 2, suit: 'clubs', rank: '8', visual: '🚛', title: 'Vehicle Sim', concept: 'Driving physics.', example: 'SnowRunner' },
-            { id: '2-c9', deck: 2, suit: 'clubs', rank: '9', visual: '👨‍👩‍👧‍👦', title: 'Crowd', concept: 'Social stealth.', example: 'Hitman' },
-            { id: '2-c10', deck: 2, suit: 'clubs', rank: '10', visual: '🚗', title: 'Soft Body', concept: 'Realistic crash.', example: 'BeamNG.drive' },
-            { id: '2-cj', deck: 2, suit: 'clubs', rank: 'J', visual: '🎤', title: 'Voice', concept: 'Mic input.', example: 'Lethal Company' },
-            { id: '2-cq', deck: 2, suit: 'clubs', rank: 'Q', visual: '📍', title: 'GPS', concept: 'Location based.', example: 'Pokemon GO' },
-            { id: '2-ck', deck: 2, suit: 'clubs', rank: 'K', visual: '🧬', title: 'Evolution', concept: 'Procedural life.', example: 'Spore' },
-            { id: '2-ca', deck: 2, suit: 'clubs', rank: 'A', visual: '🌪️', title: 'Weather', concept: 'Dynamic storms.', example: 'Sea of Thieves' },
-            { id: '2-joker', deck: 2, suit: 'joker', rank: '★', visual: '📀', title: 'Remaster', concept: 'Modernize classic.', example: 'Resident Evil 4' },
+            { id: '2-h2', deck: 2, suit: 'hearts', rank: '2', visual: '🤝', title: 'Companion', concept: 'AI partner bond.', example: 'BioShock Infinite, Last of Us, God of War' },
+            { id: '2-h3', deck: 2, suit: 'hearts', rank: '3', visual: '⚔️', title: 'Rival', concept: 'Recurring antagonist.', example: 'Pokémon, Yakuza, Devil May Cry' },
+            { id: '2-h4', deck: 2, suit: 'hearts', rank: '4', visual: '👥', title: 'Ensemble', concept: 'Group dynamics.', example: 'Mass Effect, Dragon Age, Persona 5' },
+            { id: '2-h5', deck: 2, suit: 'hearts', rank: '5', visual: '🤥', title: 'Unreliable', concept: 'Lying narrator.', example: 'Spec Ops: The Line, Bioshock, Silent Hill 2' },
+            { id: '2-h6', deck: 2, suit: 'hearts', rank: '6', visual: '♾️', title: 'Time Loop', concept: 'Relive and learn.', example: '12 Minutes, Outer Wilds, Deathloop' },
+            { id: '2-h7', deck: 2, suit: 'hearts', rank: '7', visual: '🔍', title: 'Whodunit', concept: 'Solve a crime.', example: 'Obra Dinn, Ace Attorney, Disco Elysium' },
+            { id: '2-h8', deck: 2, suit: 'hearts', rank: '8', visual: '💘', title: 'Romance', concept: 'Relationships.', example: 'Stardew Valley, Mass Effect, Hades' },
+            { id: '2-h9', deck: 2, suit: 'hearts', rank: '9', visual: '🎭', title: 'Tragedy', concept: 'Loss and sacrifice.', example: 'Last of Us Part II, RDR2, Shadow of the Colossus' },
+            { id: '2-h10', deck: 2, suit: 'hearts', rank: '10', visual: '🤡', title: 'Satire', concept: 'Social commentary.', example: 'Helldivers 2, GTA V, Fallout' },
+            { id: '2-hj', deck: 2, suit: 'hearts', rank: 'J', visual: '😶', title: 'Silent Hero', concept: 'Player projection.', example: 'Half-Life, Zelda, Portal' },
+            { id: '2-hq', deck: 2, suit: 'hearts', rank: 'Q', visual: '⚖️', title: 'Moral Gray', concept: 'No good or evil.', example: 'Witcher 3, Cyberpunk 2077, Fallout New Vegas' },
+            { id: '2-hk', deck: 2, suit: 'hearts', rank: 'K', visual: '🌲', title: 'Branching', concept: 'Massive variations.', example: 'Detroit: Become Human, Baldur\'s Gate 3, Until Dawn' },
+            { id: '2-ha', deck: 2, suit: 'hearts', rank: 'A', visual: '🎬', title: 'Director AI', concept: 'Dynamic pacing.', example: 'Left 4 Dead 2, Alien Isolation, Rimworld' },
+            
+            { id: '2-s2', deck: 2, suit: 'spades', rank: '2', visual: '🃏', title: 'Deckbuilder', concept: 'Card-based combat.', example: 'Slay the Spire, Balatro, Marvel Snap' },
+            { id: '2-s3', deck: 2, suit: 'spades', rank: '3', visual: '🚁', title: 'Extraction', concept: 'High stakes escape.', example: 'Tarkov, Dark and Darker, Hunt: Showdown' },
+            { id: '2-s4', deck: 2, suit: 'spades', rank: '4', visual: '🛡️', title: 'Parry', concept: 'Defense is offense.', example: 'Sekiro, Lies of P, Street Fighter III' },
+            { id: '2-s5', deck: 2, suit: 'spades', rank: '5', visual: '🥊', title: 'Combo', concept: 'Chain attacks.', example: 'Devil May Cry, Bayonetta, Hi-Fi Rush' },
+            { id: '2-s6', deck: 2, suit: 'spades', rank: '6', visual: '🪝', title: 'Grapple', concept: 'Vertical mobility.', example: 'Spider-Man, Just Cause, Titanfall 2' },
+            { id: '2-s7', deck: 2, suit: 'spades', rank: '7', visual: '🦖', title: 'Tamer', concept: 'Capture enemies.', example: 'Palworld, Pokémon, Slime Rancher' },
+            { id: '2-s8', deck: 2, suit: 'spades', rank: '8', visual: '👻', title: 'Possession', concept: 'Control enemies.', example: 'Mario Odyssey, Driver San Francisco, Messiah' },
+            { id: '2-s9', deck: 2, suit: 'spades', rank: '9', visual: '🧟', title: 'Horde', concept: 'Overwhelming numbers.', example: 'Days Gone, Left 4 Dead, Vampire Survivors' },
+            { id: '2-s10', deck: 2, suit: 'spades', rank: '10', visual: '⏱️', title: 'Speedrun', concept: 'Optimization.', example: 'Neon White, Mirror\'s Edge, Sonic' },
+            { id: '2-sj', deck: 2, suit: 'spades', rank: 'J', visual: '💰', title: 'Heist', concept: 'Plan and execute.', example: 'Payday 2, GTA V, Monaco' },
+            { id: '2-sq', deck: 2, suit: 'spades', rank: 'Q', visual: '🤺', title: 'Duel', concept: '1v1 Spacing.', example: 'Nidhogg, For Honor, Bushido Blade' },
+            { id: '2-sk', deck: 2, suit: 'spades', rank: 'K', visual: '🐜', title: 'Size Shift', concept: 'Scale mechanics.', example: 'Grounded, It Takes Two, Katamari' },
+            { id: '2-sa', deck: 2, suit: 'spades', rank: 'A', visual: '🌑', title: 'Shadow', concept: 'Light stealth.', example: 'Thief, Splinter Cell, Mark of the Ninja' },
+            
+            { id: '2-d2', deck: 2, suit: 'diamonds', rank: '2', visual: '🔄', title: 'Roguelite', concept: 'Runs with upgrades.', example: 'Hades, Dead Cells, Binding of Isaac' },
+            { id: '2-d3', deck: 2, suit: 'diamonds', rank: '3', visual: '🎰', title: 'Gacha', concept: 'Random rewards.', example: 'Genshin Impact, Fate/GO, Honkai Star Rail' },
+            { id: '2-d4', deck: 2, suit: 'diamonds', rank: '4', visual: '📈', title: 'Prestige', concept: 'Reset for power.', example: 'Cookie Clicker, Adventure Capitalist, Idle Miner' },
+            { id: '2-d5', deck: 2, suit: 'diamonds', rank: '5', visual: '⛏️', title: 'Crafting', concept: 'Gather > Craft.', example: 'Minecraft, Terraria, Valheim' },
+            { id: '2-d6', deck: 2, suit: 'diamonds', rank: '6', visual: '💹', title: 'Player Market', concept: 'Trading economy.', example: 'EVE Online, WoW, Warframe' },
+            { id: '2-d7', deck: 2, suit: 'diamonds', rank: '7', visual: '🦋', title: 'Collection', concept: 'Fill the museum.', example: 'Animal Crossing, Pokémon, Stardew Valley' },
+            { id: '2-d8', deck: 2, suit: 'diamonds', rank: '8', visual: '🎟️', title: 'Battle Pass', concept: 'Seasonal tracks.', example: 'Fortnite, Apex Legends, COD Warzone' },
+            { id: '2-d9', deck: 2, suit: 'diamonds', rank: '9', visual: '✏️', title: 'Level Editor', concept: 'UGC Tools.', example: 'Mario Maker, LittleBigPlanet, Roblox' },
+            { id: '2-d10', deck: 2, suit: 'diamonds', rank: '10', visual: '📜', title: 'Wiki-Bait', concept: 'Obscure lore.', example: 'Tunic, Elden Ring, Fez' },
+            { id: '2-dj', deck: 2, suit: 'diamonds', rank: 'J', visual: '📊', title: 'Min-Max', concept: 'Deep stats.', example: 'Path of Exile, Diablo IV, Monster Hunter' },
+            { id: '2-dq', deck: 2, suit: 'diamonds', rank: 'Q', visual: '📅', title: 'Daily', concept: 'One challenge/day.', example: 'Wordle, Daily Runs, Animal Crossing' },
+            { id: '2-dk', deck: 2, suit: 'diamonds', rank: 'K', visual: '📺', title: 'Episodic', concept: 'Released chapters.', example: 'Walking Dead, Life is Strange, Deltarune' },
+            { id: '2-da', deck: 2, suit: 'diamonds', rank: 'A', visual: '🕵️', title: 'ARG', concept: 'Reality blending.', example: 'Inscryption, Doki Doki LC, Frog Fractions' },
+            
+            { id: '2-c2', deck: 2, suit: 'clubs', rank: '2', visual: '🔥', title: 'Element', concept: 'Chemistry systems.', example: 'Breath of the Wild, Magicka, Divinity OS2' },
+            { id: '2-c3', deck: 2, suit: 'clubs', rank: '3', visual: '👽', title: 'Stalker AI', concept: 'Hunting enemy.', example: 'Alien: Isolation, Resident Evil 2, Mr. X' },
+            { id: '2-c4', deck: 2, suit: 'clubs', rank: '4', visual: '🕳️', title: 'Deformable', concept: 'Digging terrain.', example: 'Deep Rock Galactic, Red Faction, Minecraft' },
+            { id: '2-c5', deck: 2, suit: 'clubs', rank: '5', visual: '🌊', title: 'Fluid', concept: 'Liquid physics.', example: 'Mario Sunshine, Splatoon, From Dust' },
+            { id: '2-c6', deck: 2, suit: 'clubs', rank: '6', visual: '🌀', title: 'Portal', concept: 'Non-Euclidean.', example: 'Portal, Antichamber, Superliminal' },
+            { id: '2-c7', deck: 2, suit: 'clubs', rank: '7', visual: '🌗', title: 'Dual World', concept: 'Dimension swap.', example: 'Titanfall 2, Lords of the Fallen, Link to the Past' },
+            { id: '2-c8', deck: 2, suit: 'clubs', rank: '8', visual: '🚛', title: 'Vehicle Sim', concept: 'Driving physics.', example: 'SnowRunner, Euro Truck Sim, BeamNG' },
+            { id: '2-c9', deck: 2, suit: 'clubs', rank: '9', visual: '👨‍👩‍👧‍👦', title: 'Crowd', concept: 'Social stealth.', example: 'Hitman, Assassin\'s Creed, Party Hard' },
+            { id: '2-c10', deck: 2, suit: 'clubs', rank: '10', visual: '🚗', title: 'Soft Body', concept: 'Realistic crash.', example: 'BeamNG.drive, Wreckfest, FlatOut' },
+            { id: '2-cj', deck: 2, suit: 'clubs', rank: 'J', visual: '🎤', title: 'Voice', concept: 'Mic input.', example: 'Lethal Company, Phasmophobia, Seaman' },
+            { id: '2-cq', deck: 2, suit: 'clubs', rank: 'Q', visual: '📍', title: 'GPS', concept: 'Location based.', example: 'Pokemon GO, Monster Hunter Now, Orna' },
+            { id: '2-ck', deck: 2, suit: 'clubs', rank: 'K', visual: '🧬', title: 'Evolution', concept: 'Procedural life.', example: 'Spore, No Man\'s Sky, Ancestors' },
+            { id: '2-ca', deck: 2, suit: 'clubs', rank: 'A', visual: '🌪️', title: 'Weather', concept: 'Dynamic storms.', example: 'Sea of Thieves, Mad Max, Just Cause 4' },
+            
+            { id: '2-joker', deck: 2, suit: 'joker', rank: '★', visual: '📀', title: 'Remaster', concept: 'Modernize classic.', example: 'Resident Evil 4, FF7 Remake, Dead Space' },
         ];
 
-        // DECK 3: Aesthetics (Art, Audio, Vibe)
         const DECK_3 = [
-            // Hearts: Visual Style
-            { id: '3-h2', deck: 3, suit: 'hearts', rank: '2', visual: '👾', title: 'Pixel Art', concept: 'Retro nostalgia or modern crunch.', example: 'Celeste / Stardew Valley' },
-            { id: '3-h3', deck: 3, suit: 'hearts', rank: '3', visual: '🔳', title: 'Low Poly', concept: 'PS1 era aesthetics.', example: 'Ultrakill / Deep Rock Galactic' },
-            { id: '3-h4', deck: 3, suit: 'hearts', rank: '4', visual: '🖌️', title: 'Cel Shaded', concept: 'Living comic book.', example: 'Borderlands / Zelda: Wind Waker' },
-            { id: '3-h5', deck: 3, suit: 'hearts', rank: '5', visual: '🌚', title: 'Noir', concept: 'High contrast black & white.', example: 'Limbo / Return of the Obra Dinn' },
-            { id: '3-h6', deck: 3, suit: 'hearts', rank: '6', visual: '🎨', title: 'Hand-Drawn', concept: 'Traditional animation frames.', example: 'Cuphead / Hollow Knight' },
-            { id: '3-h7', deck: 3, suit: 'hearts', rank: '7', visual: '🌈', title: 'Psychedelic', concept: 'Sensory overload colors.', example: 'Hotline Miami / Cruelty Squad' },
-            { id: '3-h8', deck: 3, suit: 'hearts', rank: '8', visual: '🧱', title: 'Voxel', concept: '3D Pixel blocks.', example: 'Minecraft / Teardown' },
-            { id: '3-h9', deck: 3, suit: 'hearts', rank: '9', visual: '🩸', title: 'Gothic', concept: 'Dark, ornate, imposing.', example: 'Bloodborne / Darkest Dungeon' },
-            { id: '3-h10', deck: 3, suit: 'hearts', rank: '10', visual: '⬜', title: 'Minimalism', concept: 'Clean lines, flat colors.', example: 'Mini Metro / Superhot' },
-            { id: '3-hj', deck: 3, suit: 'hearts', rank: 'J', visual: '🖼️', title: 'Watercolor', concept: 'Soft, painted edges.', example: 'Gris / Okami' },
-            { id: '3-hq', deck: 3, suit: 'hearts', rank: 'Q', visual: '📺', title: 'CRT Filter', concept: 'Analog signal decay.', example: 'Signalis / Balatro' },
-            { id: '3-hk', deck: 3, suit: 'hearts', rank: 'K', visual: '🗿', title: 'Claymation', concept: 'Stop-motion aesthetic.', example: 'Hylics / Neverhood' },
-            { id: '3-ha', deck: 3, suit: 'hearts', rank: 'A', visual: '📷', title: 'Photoreal', concept: 'Uncanny realism.', example: 'Unrecord / Hellblade II' },
+            { id: '3-h2', deck: 3, suit: 'hearts', rank: '2', visual: '👾', title: 'Pixel Art', concept: 'Retro nostalgia or modern crunch.', example: 'Celeste, Stardew Valley, Terraria' },
+            { id: '3-h3', deck: 3, suit: 'hearts', rank: '3', visual: '🔳', title: 'Low Poly', concept: 'PS1 era aesthetics.', example: 'Ultrakill, Deep Rock Galactic, Valheim' },
+            { id: '3-h4', deck: 3, suit: 'hearts', rank: '4', visual: '🖌️', title: 'Cel Shaded', concept: 'Living comic book.', example: 'Borderlands, Zelda: Wind Waker, Hi-Fi Rush' },
+            { id: '3-h5', deck: 3, suit: 'hearts', rank: '5', visual: '🌚', title: 'Noir', concept: 'High contrast black & white.', example: 'Limbo, Return of the Obra Dinn, Trek to Yomi' },
+            { id: '3-h6', deck: 3, suit: 'hearts', rank: '6', visual: '🎨', title: 'Hand-Drawn', concept: 'Traditional animation frames.', example: 'Cuphead, Hollow Knight, Spiritfarer' },
+            { id: '3-h7', deck: 3, suit: 'hearts', rank: '7', visual: '🌈', title: 'Psychedelic', concept: 'Sensory overload colors.', example: 'Hotline Miami, Cruelty Squad, Rez' },
+            { id: '3-h8', deck: 3, suit: 'hearts', rank: '8', visual: '🧱', title: 'Voxel', concept: '3D Pixel blocks.', example: 'Minecraft, Teardown, Cube World' },
+            { id: '3-h9', deck: 3, suit: 'hearts', rank: '9', visual: '🩸', title: 'Gothic', concept: 'Dark, ornate, imposing.', example: 'Bloodborne, Darkest Dungeon, Castlevania' },
+            { id: '3-h10', deck: 3, suit: 'hearts', rank: '10', visual: '⬜', title: 'Minimalism', concept: 'Clean lines, flat colors.', example: 'Mini Metro, Superhot, Thomas Was Alone' },
+            { id: '3-hj', deck: 3, suit: 'hearts', rank: 'J', visual: '🖼️', title: 'Watercolor', concept: 'Soft, painted edges.', example: 'Gris, Okami, Dorf Romantik' },
+            { id: '3-hq', deck: 3, suit: 'hearts', rank: 'Q', visual: '📺', title: 'CRT Filter', concept: 'Analog signal decay.', example: 'Signalis, Balatro, Alien Isolation' },
+            { id: '3-hk', deck: 3, suit: 'hearts', rank: 'K', visual: '🗿', title: 'Claymation', concept: 'Stop-motion aesthetic.', example: 'Hylics, The Neverhood, Harold Halibut' },
+            { id: '3-ha', deck: 3, suit: 'hearts', rank: 'A', visual: '📷', title: 'Photoreal', concept: 'Uncanny realism.', example: 'Unrecord, Hellblade II, RDR2' },
 
-            // Spades: Audio
-            { id: '3-s2', deck: 3, suit: 'spades', rank: '2', visual: '🎹', title: 'Dynamic Music', concept: 'Music changes with action.', example: 'Doom Eternal / Metal Hellsinger' },
-            { id: '3-s3', deck: 3, suit: 'spades', rank: '3', visual: '🔇', title: 'Silence', concept: 'Absence of sound for tension.', example: 'Inside / Dark Souls' },
-            { id: '3-s4', deck: 3, suit: 'spades', rank: '4', visual: '👾', title: 'Chiptune', concept: '8-bit constraints.', example: 'Shovel Knight / Undertale' },
-            { id: '3-s5', deck: 3, suit: 'spades', rank: '5', visual: '🎻', title: 'Orchestral', concept: 'Epic cinematic score.', example: 'Elden Ring / Final Fantasy' },
-            { id: '3-s6', deck: 3, suit: 'spades', rank: '6', visual: '🎧', title: 'Binaural 3D', concept: 'Positional audio focus.', example: 'Hellblade / Hunt: Showdown' },
-            { id: '3-s7', deck: 3, suit: 'spades', rank: '7', visual: '🔊', title: 'Diegetic', concept: 'Sound comes from in-world.', example: 'Dead Space / Alien Isolation' },
-            { id: '3-s8', deck: 3, suit: 'spades', rank: '8', visual: '🗣️', title: 'Narrator', concept: 'Voiceover reacts to play.', example: 'Bastion / Stanley Parable' },
-            { id: '3-s9', deck: 3, suit: 'spades', rank: '9', visual: '🥁', title: 'Rhythm Sync', concept: 'SFX match the beat.', example: 'Hi-Fi Rush / Rez' },
-            { id: '3-s10', deck: 3, suit: 'spades', rank: '10', visual: '🤫', title: 'ASMR', concept: 'Satisfying clicks/whispers.', example: 'Unpacking / Potion Craft' },
-            { id: '3-sj', deck: 3, suit: 'spades', rank: 'J', visual: '🏭', title: 'Industrial', concept: 'Grinding metal sounds.', example: 'Factorio / Silent Hill' },
-            { id: '3-sq', deck: 3, suit: 'spades', rank: 'Q', visual: '🦗', title: 'Ambient', concept: 'Nature and atmosphere.', example: 'Breath of the Wild / Skyrim' },
-            { id: '3-sk', deck: 3, suit: 'spades', rank: 'K', visual: '💥', title: 'Glitch', concept: 'Audio artifacts/distortion.', example: 'Cyberpunk 2077 / Pony Island' },
-            { id: '3-sa', deck: 3, suit: 'spades', rank: 'A', visual: '🎸', title: 'Adaptive', concept: 'Instru. layers add up.', example: 'Nier Automata / Hades' },
+            { id: '3-s2', deck: 3, suit: 'spades', rank: '2', visual: '🎹', title: 'Dynamic Music', concept: 'Music changes with action.', example: 'Doom Eternal, Metal Hellsinger, Nier Automata' },
+            { id: '3-s3', deck: 3, suit: 'spades', rank: '3', visual: '🔇', title: 'Silence', concept: 'Absence of sound for tension.', example: 'Inside, Dark Souls, Shadow of Colossus' },
+            { id: '3-s4', deck: 3, suit: 'spades', rank: '4', visual: '👾', title: 'Chiptune', concept: '8-bit constraints.', example: 'Shovel Knight, Undertale, Celeste' },
+            { id: '3-s5', deck: 3, suit: 'spades', rank: '5', visual: '🎻', title: 'Orchestral', concept: 'Epic cinematic score.', example: 'Elden Ring, Final Fantasy, Halo' },
+            { id: '3-s6', deck: 3, suit: 'spades', rank: '6', visual: '🎧', title: 'Binaural 3D', concept: 'Positional audio focus.', example: 'Hellblade, Hunt: Showdown, Overwatch' },
+            { id: '3-s7', deck: 3, suit: 'spades', rank: '7', visual: '🔊', title: 'Diegetic', concept: 'Sound comes from in-world.', example: 'Dead Space, Alien Isolation, Metro Exodus' },
+            { id: '3-s8', deck: 3, suit: 'spades', rank: '8', visual: '🗣️', title: 'Narrator', concept: 'Voiceover reacts to play.', example: 'Bastion, Stanley Parable, Baldur\'s Gate 3' },
+            { id: '3-s9', deck: 3, suit: 'spades', rank: '9', visual: '🥁', title: 'Rhythm Sync', concept: 'SFX match the beat.', example: 'Hi-Fi Rush, Rez, Thumper' },
+            { id: '3-s10', deck: 3, suit: 'spades', rank: '10', visual: '🤫', title: 'ASMR', concept: 'Satisfying clicks/whispers.', example: 'Unpacking, Potion Craft, Dorfromantik' },
+            { id: '3-sj', deck: 3, suit: 'spades', rank: 'J', visual: '🏭', title: 'Industrial', concept: 'Grinding metal sounds.', example: 'Factorio, Silent Hill, Scorn' },
+            { id: '3-sq', deck: 3, suit: 'spades', rank: 'Q', visual: '🦗', title: 'Ambient', concept: 'Nature and atmosphere.', example: 'Breath of the Wild, Skyrim, Flower' },
+            { id: '3-sk', deck: 3, suit: 'spades', rank: 'K', visual: '💥', title: 'Glitch', concept: 'Audio artifacts/distortion.', example: 'Cyberpunk 2077, Pony Island, Axiom Verge' },
+            { id: '3-sa', deck: 3, suit: 'spades', rank: 'A', visual: '🎸', title: 'Adaptive', concept: 'Instru. layers add up.', example: 'Nier Automata, Hades, Red Dead Redemption' },
 
-            // Diamonds: Camera/View
-            { id: '3-d2', deck: 3, suit: 'diamonds', rank: '2', visual: '👀', title: 'First Person', concept: 'Through the eyes.', example: 'Call of Duty / Portal' },
-            { id: '3-d3', deck: 3, suit: 'diamonds', rank: '3', visual: '📐', title: 'Isometric', concept: '3/4 top-down view.', example: 'Hades / Disco Elysium' },
-            { id: '3-d4', deck: 3, suit: 'diamonds', rank: '4', visual: '🏃', title: 'Side Scroller', concept: '2D plane movement.', example: 'Mario / Hollow Knight' },
-            { id: '3-d5', deck: 3, suit: 'diamonds', rank: '5', visual: '🚁', title: 'Top-Down', concept: 'Bird\'s eye view.', example: 'Hotline Miami / Factorio' },
-            { id: '3-d6', deck: 3, suit: 'diamonds', rank: '6', visual: '🎥', title: 'Fixed Angle', concept: 'Cinematic specific frames.', example: 'Resident Evil 1 / God of War 3' },
-            { id: '3-d7', deck: 3, suit: 'diamonds', rank: '7', visual: '🥽', title: 'VR', concept: 'Headset immersion.', example: 'Half-Life Alyx / Beat Saber' },
-            { id: '3-d8', deck: 3, suit: 'diamonds', rank: '8', visual: '🖥️', title: 'Second Person', concept: 'Watching a screen in-game.', example: 'Five Nights at Freddy\'s' },
-            { id: '3-d9', deck: 3, suit: 'diamonds', rank: '9', visual: '📜', title: 'Text-Only', concept: 'Imagination driven.', example: 'Zork / A Dark Room' },
-            { id: '3-d10', deck: 3, suit: 'diamonds', rank: '10', visual: '🪟', title: 'Split Screen', concept: 'Simultaneous views.', example: 'It Takes Two / The Medium' },
-            { id: '3-dj', deck: 3, suit: 'diamonds', rank: 'J', visual: '🚫', title: 'UI-less', concept: 'Zero HUD immersion.', example: 'Dead Space / Journey' },
-            { id: '3-dq', deck: 3, suit: 'diamonds', rank: 'Q', visual: '📹', title: 'CCTV/Bodycam', concept: 'Grainy surveillance lens.', example: 'Observation / Content Warning' },
-            { id: '3-dk', deck: 3, suit: 'diamonds', rank: 'K', visual: '🐟', title: 'Fish-eye', concept: 'Distorted wide angle.', example: 'Cruelty Squad / Skate' },
-            { id: '3-da', deck: 3, suit: 'diamonds', rank: 'A', visual: '📱', title: 'Portrait', concept: 'Vertical phone view.', example: 'Clash Royale / Downwell' },
+            { id: '3-d2', deck: 3, suit: 'diamonds', rank: '2', visual: '👀', title: 'First Person', concept: 'Through the eyes.', example: 'Call of Duty, Portal, Cyberpunk 2077' },
+            { id: '3-d3', deck: 3, suit: 'diamonds', rank: '3', visual: '📐', title: 'Isometric', concept: '3/4 top-down view.', example: 'Hades, Disco Elysium, Diablo' },
+            { id: '3-d4', deck: 3, suit: 'diamonds', rank: '4', visual: '🏃', title: 'Side Scroller', concept: '2D plane movement.', example: 'Mario, Hollow Knight, Limbo' },
+            { id: '3-d5', deck: 3, suit: 'diamonds', rank: '5', visual: '🚁', title: 'Top-Down', concept: 'Bird\'s eye view.', example: 'Hotline Miami, Factorio, GTA 2' },
+            { id: '3-d6', deck: 3, suit: 'diamonds', rank: '6', visual: '🎥', title: 'Fixed Angle', concept: 'Cinematic specific frames.', example: 'Resident Evil 1, God of War 3, Until Dawn' },
+            { id: '3-d7', deck: 3, suit: 'diamonds', rank: '7', visual: '🥽', title: 'VR', concept: 'Headset immersion.', example: 'Half-Life Alyx, Beat Saber, Superhot VR' },
+            { id: '3-d8', deck: 3, suit: 'diamonds', rank: '8', visual: '🖥️', title: 'Second Person', concept: 'Watching a screen in-game.', example: 'Five Nights at Freddy\'s, Duskers, Observation' },
+            { id: '3-d9', deck: 3, suit: 'diamonds', rank: '9', visual: '📜', title: 'Text-Only', concept: 'Imagination driven.', example: 'Zork, A Dark Room, AI Dungeon' },
+            { id: '3-d10', deck: 3, suit: 'diamonds', rank: '10', visual: '🪟', title: 'Split Screen', concept: 'Simultaneous views.', example: 'It Takes Two, The Medium, Mario Kart' },
+            { id: '3-dj', deck: 3, suit: 'diamonds', rank: 'J', visual: '🚫', title: 'UI-less', concept: 'Zero HUD immersion.', example: 'Dead Space, Journey, Firewatch' },
+            { id: '3-dq', deck: 3, suit: 'diamonds', rank: 'Q', visual: '📹', title: 'CCTV/Bodycam', concept: 'Grainy surveillance lens.', example: 'Observation, Content Warning, FNAF' },
+            { id: '3-dk', deck: 3, suit: 'diamonds', rank: 'K', visual: '🐟', title: 'Fish-eye', concept: 'Distorted wide angle.', example: 'Cruelty Squad, Skate, Ultra-Wide' },
+            { id: '3-da', deck: 3, suit: 'diamonds', rank: 'A', visual: '📱', title: 'Portrait', concept: 'Vertical phone view.', example: 'Clash Royale, Downwell, Marvel Snap' },
 
-            // Clubs: Vibe/Feel
-            { id: '3-c2', deck: 3, suit: 'clubs', rank: '2', visual: '☕', title: 'Cozy', concept: 'Safe and warm.', example: 'Stardew / Animal Crossing' },
-            { id: '3-c3', deck: 3, suit: 'clubs', rank: '3', visual: '😱', title: 'Horror', concept: 'Dread and panic.', example: 'Amnesia / Outlast' },
-            { id: '3-c4', deck: 3, suit: 'clubs', rank: '4', visual: '⚡', title: 'Adrenaline', concept: 'High speed focus.', example: 'Doom / Burnout' },
-            { id: '3-c5', deck: 3, suit: 'clubs', rank: '5', visual: '🧘', title: 'Zen', concept: 'Flow state relaxation.', example: 'Tetris Effect / Flow' },
-            { id: '3-c6', deck: 3, suit: 'clubs', rank: '6', visual: '😢', title: 'Melancholy', concept: 'Sad but beautiful.', example: 'Gris / Shadow of the Colossus' },
-            { id: '3-c7', deck: 3, suit: 'clubs', rank: '7', visual: '🍌', title: 'Slapstick', concept: 'Goofy physicality.', example: 'Fall Guys / Goat Simulator' },
-            { id: '3-c8', deck: 3, suit: 'clubs', rank: '8', visual: '🏰', title: 'Epic', concept: 'Grand scale grandeur.', example: 'Elden Ring / God of War' },
-            { id: '3-c9', deck: 3, suit: 'clubs', rank: '9', visual: '📦', title: 'Claustrophobic', concept: 'Tight, oppressive spaces.', example: 'Iron Lung / Metroid' },
-            { id: '3-c10', deck: 3, suit: 'clubs', rank: '10', visual: '🎞️', title: 'Nostalgic', concept: 'Yearning for the past.', example: 'Shovel Knight / Stranger Things' },
-            { id: '3-cj', deck: 3, suit: 'clubs', rank: 'J', visual: '🍄', title: 'Surreal', concept: 'Dream logic weirdness.', example: 'Superliminal / Antichamber' },
-            { id: '3-cq', deck: 3, suit: 'clubs', rank: 'Q', visual: '🪨', title: 'Gritty', concept: 'Dirty realism.', example: 'Last of Us / Gears of War' },
-            { id: '3-ck', deck: 3, suit: 'clubs', rank: 'K', visual: '🎠', title: 'Whimsical', concept: 'Playful imagination.', example: 'LittleBigPlanet / Psychonauts' },
-            { id: '3-ca', deck: 3, suit: 'clubs', rank: 'A', visual: '✨', title: 'Ethereal', concept: 'Otherworldly divine.', example: 'Journey / Child of Light' },
+            { id: '3-c2', deck: 3, suit: 'clubs', rank: '2', visual: '☕', title: 'Cozy', concept: 'Safe and warm.', example: 'Stardew Valley, Animal Crossing, Unpacking' },
+            { id: '3-c3', deck: 3, suit: 'clubs', rank: '3', visual: '😱', title: 'Horror', concept: 'Dread and panic.', example: 'Amnesia, Outlast, Resident Evil' },
+            { id: '3-c4', deck: 3, suit: 'clubs', rank: '4', visual: '⚡', title: 'Adrenaline', concept: 'High speed focus.', example: 'Doom, Burnout, Hotline Miami' },
+            { id: '3-c5', deck: 3, suit: 'clubs', rank: '5', visual: '🧘', title: 'Zen', concept: 'Flow state relaxation.', example: 'Tetris Effect, Flow, Journey' },
+            { id: '3-c6', deck: 3, suit: 'clubs', rank: '6', visual: '😢', title: 'Melancholy', concept: 'Sad but beautiful.', example: 'Gris, Shadow of the Colossus, Spiritfarer' },
+            { id: '3-c7', deck: 3, suit: 'clubs', rank: '7', visual: '🍌', title: 'Slapstick', concept: 'Goofy physicality.', example: 'Fall Guys, Goat Simulator, Human Fall Flat' },
+            { id: '3-c8', deck: 3, suit: 'clubs', rank: '8', visual: '🏰', title: 'Epic', concept: 'Grand scale grandeur.', example: 'Elden Ring, God of War, Halo' },
+            { id: '3-c9', deck: 3, suit: 'clubs', rank: '9', visual: '📦', title: 'Claustrophobic', concept: 'Tight, oppressive spaces.', example: 'Iron Lung, Metroid, Dead Space' },
+            { id: '3-c10', deck: 3, suit: 'clubs', rank: '10', visual: '🎞️', title: 'Nostalgic', concept: 'Yearning for the past.', example: 'Shovel Knight, Stranger Things, Thimbleweed Park' },
+            { id: '3-cj', deck: 3, suit: 'clubs', rank: 'J', visual: '🍄', title: 'Surreal', concept: 'Dream logic weirdness.', example: 'Superliminal, Antichamber, Control' },
+            { id: '3-cq', deck: 3, suit: 'clubs', rank: 'Q', visual: '🪨', title: 'Gritty', concept: 'Dirty realism.', example: 'Last of Us, Gears of War, Metro' },
+            { id: '3-ck', deck: 3, suit: 'clubs', rank: 'K', visual: '🎠', title: 'Whimsical', concept: 'Playful imagination.', example: 'LittleBigPlanet, Psychonauts, Katamari' },
+            { id: '3-ca', deck: 3, suit: 'clubs', rank: 'A', visual: '✨', title: 'Ethereal', concept: 'Otherworldly divine.', example: 'Journey, Child of Light, Sky: Children of Light' },
 
-            // Joker
-            { id: '3-joker', deck: 3, suit: 'joker', rank: '★', visual: '🤡', title: 'Mascot', concept: 'Character-driven brand.', example: 'Mario / Sonic' },
+            { id: '3-joker', deck: 3, suit: 'joker', rank: '★', visual: '🤡', title: 'Mascot', concept: 'Character-driven brand.', example: 'Mario, Sonic, Crash Bandicoot' },
         ];
 
-        // DECK 4: World & Setting (Biomes, Eras, Factions)
         const DECK_4 = [
-            // Hearts: Biomes
-            { id: '4-h2', deck: 4, suit: 'hearts', rank: '2', visual: '☁️', title: 'Floating Isles', concept: 'Sky world archipelagos.', example: 'BioShock Infinite / Zelda: TotK' },
-            { id: '4-h3', deck: 4, suit: 'hearts', rank: '3', visual: '🌆', title: 'Cyber City', concept: 'Neon rain metropolis.', example: 'Cyberpunk 2077 / Stray' },
-            { id: '4-h4', deck: 4, suit: 'hearts', rank: '4', visual: '☢️', title: 'Post-Apoc', concept: 'Ruined civilization.', example: 'Fallout / Last of Us' },
-            { id: '4-h5', deck: 4, suit: 'hearts', rank: '5', visual: '🦑', title: 'Deep Sea', concept: 'Underwater pressure.', example: 'Subnautica / Dave the Diver' },
-            { id: '4-h6', deck: 4, suit: 'hearts', rank: '6', visual: '🛰️', title: 'Space Station', concept: 'Technological isolation.', example: 'Prey / Among Us' },
-            { id: '4-h7', deck: 4, suit: 'hearts', rank: '7', visual: '🕳️', title: 'Subterranean', concept: 'Underground networks.', example: 'Hollow Knight / Metro' },
-            { id: '4-h8', deck: 4, suit: 'hearts', rank: '8', visual: '🌌', title: 'Infinite Void', concept: 'Empty space/nothingness.', example: 'Outer Wilds / No Man\'s Sky' },
-            { id: '4-h9', deck: 4, suit: 'hearts', rank: '9', visual: '🌳', title: 'Living Forest', concept: 'Nature is sentient.', example: 'Ori / Darkwood' },
-            { id: '4-h10', deck: 4, suit: 'hearts', rank: '10', visual: '🏜️', title: 'Wasteland', concept: 'Harsh desert survival.', example: 'Mad Max / Journey' },
-            { id: '4-hj', deck: 4, suit: 'hearts', rank: 'J', visual: '⚙️', title: 'Clockwork', concept: 'Inside a giant machine.', example: 'Dishonored 2 / Machinarium' },
-            { id: '4-hq', deck: 4, suit: 'hearts', rank: 'Q', visual: '🍬', title: 'Candy Land', concept: 'Edible landscape.', example: 'Cuphead / Fall Guys' },
-            { id: '4-hk', deck: 4, suit: 'hearts', rank: 'K', visual: '💤', title: 'Dreamscape', concept: 'Logic-defying mind.', example: 'Psychonauts / Omori' },
-            { id: '4-ha', deck: 4, suit: 'hearts', rank: 'A', visual: '👾', title: 'Glitch World', concept: 'Code is breaking down.', example: 'Axiom Verge / Pony Island' },
+            { id: '4-h2', deck: 4, suit: 'hearts', rank: '2', visual: '☁️', title: 'Floating Isles', concept: 'Sky world archipelagos.', example: 'BioShock Infinite, Zelda: TotK, Skies of Arcadia' },
+            { id: '4-h3', deck: 4, suit: 'hearts', rank: '3', visual: '🌆', title: 'Cyber City', concept: 'Neon rain metropolis.', example: 'Cyberpunk 2077, Stray, Cloudpunk' },
+            { id: '4-h4', deck: 4, suit: 'hearts', rank: '4', visual: '☢️', title: 'Post-Apoc', concept: 'Ruined civilization.', example: 'Fallout, Last of Us, Horizon Zero Dawn' },
+            { id: '4-h5', deck: 4, suit: 'hearts', rank: '5', visual: '🦑', title: 'Deep Sea', concept: 'Underwater pressure.', example: 'Subnautica, Dave the Diver, BioShock' },
+            { id: '4-h6', deck: 4, suit: 'hearts', rank: '6', visual: '🛰️', title: 'Space Station', concept: 'Technological isolation.', example: 'Prey, Among Us, Dead Space' },
+            { id: '4-h7', deck: 4, suit: 'hearts', rank: '7', visual: '🕳️', title: 'Subterranean', concept: 'Underground networks.', example: 'Hollow Knight, Metro, Core Keeper' },
+            { id: '4-h8', deck: 4, suit: 'hearts', rank: '8', visual: '🌌', title: 'Infinite Void', concept: 'Empty space/nothingness.', example: 'Outer Wilds, No Man\'s Sky, Elite Dangerous' },
+            { id: '4-h9', deck: 4, suit: 'hearts', rank: '9', visual: '🌳', title: 'Living Forest', concept: 'Nature is sentient.', example: 'Ori, Darkwood, Avatar' },
+            { id: '4-h10', deck: 4, suit: 'hearts', rank: '10', visual: '🏜️', title: 'Wasteland', concept: 'Harsh desert survival.', example: 'Mad Max, Journey, Dune' },
+            { id: '4-hj', deck: 4, suit: 'hearts', rank: 'J', visual: '⚙️', title: 'Clockwork', concept: 'Inside a giant machine.', example: 'Dishonored 2, Machinarium, Syberia' },
+            { id: '4-hq', deck: 4, suit: 'hearts', rank: 'Q', visual: '🍬', title: 'Candy Land', concept: 'Edible landscape.', example: 'Cuphead, Fall Guys, Wreck-It Ralph' },
+            { id: '4-hk', deck: 4, suit: 'hearts', rank: 'K', visual: '💤', title: 'Dreamscape', concept: 'Logic-defying mind.', example: 'Psychonauts, Omori, Yume Nikki' },
+            { id: '4-ha', deck: 4, suit: 'hearts', rank: 'A', visual: '👾', title: 'Glitch World', concept: 'Code is breaking down.', example: 'Axiom Verge, Pony Island, Matrix' },
 
-            // Spades: Eras/Tech
-            { id: '4-s2', deck: 4, suit: 'spades', rank: '2', visual: '🚂', title: 'Steampunk', concept: 'Brass and steam.', example: 'BioShock / Frostpunk' },
-            { id: '4-s3', deck: 4, suit: 'spades', rank: '3', visual: '🦴', title: 'Stone Age', concept: 'Primal survival.', example: 'Far Cry Primal / Turok' },
-            { id: '4-s4', deck: 4, suit: 'spades', rank: '4', visual: '🚀', title: 'Far Future', concept: 'Type III civilization.', example: 'Halo / Mass Effect' },
-            { id: '4-s5', deck: 4, suit: 'spades', rank: '5', visual: '📼', title: '1980s', concept: 'Neon retro nostalgia.', example: 'Hotline Miami / GTA Vice City' },
-            { id: '4-s6', deck: 4, suit: 'spades', rank: '6', visual: '🏰', title: 'Medieval', concept: 'Swords and castles.', example: 'Witcher / Skyrim' },
-            { id: '4-s7', deck: 4, suit: 'spades', rank: '7', visual: '🏯', title: 'Feudal Japan', concept: 'Samurai and mythology.', example: 'Sekiro / Ghost of Tsushima' },
-            { id: '4-s8', deck: 4, suit: 'spades', rank: '8', visual: '🤠', title: 'Wild West', concept: 'Outlaws and frontiers.', example: 'Red Dead / Weird West' },
-            { id: '4-s9', deck: 4, suit: 'spades', rank: '9', visual: '🕵️', title: 'Cold War', concept: 'Espionage and tension.', example: 'Metal Gear Solid 3 / CoD Black Ops' },
-            { id: '4-s10', deck: 4, suit: 'spades', rank: '10', visual: '☀️', title: 'Solar Punk', concept: 'Green utopia technology.', example: 'Terra Nil / Overwatch' },
-            { id: '4-sj', deck: 4, suit: 'spades', rank: 'J', visual: '⛽', title: 'Dieselpunk', concept: 'Gritty combustion tech.', example: 'Wolfenstein / FF7 Midgar' },
-            { id: '4-sq', deck: 4, suit: 'spades', rank: 'Q', visual: '🏺', title: 'Mythic Age', concept: 'Gods walk the earth.', example: 'God of War / Age of Mythology' },
-            { id: '4-sk', deck: 4, suit: 'spades', rank: 'K', visual: '🎩', title: 'Victorian', concept: 'Gaslight and cobblestone.', example: 'Bloodborne / Sherlock' },
-            { id: '4-sa', deck: 4, suit: 'spades', rank: 'A', visual: '🧠', title: 'Singularity', concept: 'AI transcendence.', example: 'System Shock / SOMA' },
+            { id: '4-s2', deck: 4, suit: 'spades', rank: '2', visual: '🚂', title: 'Steampunk', concept: 'Brass and steam.', example: 'BioShock, Frostpunk, The Order 1886' },
+            { id: '4-s3', deck: 4, suit: 'spades', rank: '3', visual: '🦴', title: 'Stone Age', concept: 'Primal survival.', example: 'Far Cry Primal, Turok, Ancestors' },
+            { id: '4-s4', deck: 4, suit: 'spades', rank: '4', visual: '🚀', title: 'Far Future', concept: 'Type III civilization.', example: 'Halo, Mass Effect, Destiny' },
+            { id: '4-s5', deck: 4, suit: 'spades', rank: '5', visual: '📼', title: '1980s', concept: 'Neon retro nostalgia.', example: 'Hotline Miami, GTA Vice City, Yakuza 0' },
+            { id: '4-s6', deck: 4, suit: 'spades', rank: '6', visual: '🏰', title: 'Medieval', concept: 'Swords and castles.', example: 'Witcher, Skyrim, Kingdom Come' },
+            { id: '4-s7', deck: 4, suit: 'spades', rank: '7', visual: '🏯', title: 'Feudal Japan', concept: 'Samurai and mythology.', example: 'Sekiro, Ghost of Tsushima, Nioh' },
+            { id: '4-s8', deck: 4, suit: 'spades', rank: '8', visual: '🤠', title: 'Wild West', concept: 'Outlaws and frontiers.', example: 'Red Dead, Weird West, Call of Juarez' },
+            { id: '4-s9', deck: 4, suit: 'spades', rank: '9', visual: '🕵️', title: 'Cold War', concept: 'Espionage and tension.', example: 'MGS 3, CoD Black Ops, Atomic Heart' },
+            { id: '4-s10', deck: 4, suit: 'spades', rank: '10', visual: '☀️', title: 'Solar Punk', concept: 'Green utopia technology.', example: 'Terra Nil, Overwatch, Mirror\'s Edge' },
+            { id: '4-sj', deck: 4, suit: 'spades', rank: 'J', visual: '⛽', title: 'Dieselpunk', concept: 'Gritty combustion tech.', example: 'Wolfenstein, FF7 Midgar, Iron Harvest' },
+            { id: '4-sq', deck: 4, suit: 'spades', rank: 'Q', visual: '🏺', title: 'Mythic Age', concept: 'Gods walk the earth.', example: 'God of War, Age of Mythology, Hades' },
+            { id: '4-sk', deck: 4, suit: 'spades', rank: 'K', visual: '🎩', title: 'Victorian', concept: 'Gaslight and cobblestone.', example: 'Bloodborne, Sherlock Holmes, Assassin\'s Creed Syndicate' },
+            { id: '4-sa', deck: 4, suit: 'spades', rank: 'A', visual: '🧠', title: 'Singularity', concept: 'AI transcendence.', example: 'System Shock, SOMA, Detroit: Become Human' },
 
-            // Diamonds: Factions
-            { id: '4-d2', deck: 4, suit: 'diamonds', rank: '2', visual: '🧠', title: 'Hive Mind', concept: 'One shared consciousness.', example: 'The Flood (Halo) / Tyranids' },
-            { id: '4-d3', deck: 4, suit: 'diamonds', rank: '3', visual: '🏢', title: 'Megacorp', concept: 'Profit over people.', example: 'Arasaka (Cyberpunk) / Shinra' },
-            { id: '4-d4', deck: 4, suit: 'diamonds', rank: '4', visual: '🕯️', title: 'The Cult', concept: 'Fanatical devotion.', example: 'Far Cry 5 / Resident Evil 4' },
-            { id: '4-d5', deck: 4, suit: 'diamonds', rank: '5', visual: '✊', title: 'Resistance', concept: 'Underdogs fighting back.', example: 'XCOM / Half-Life 2' },
-            { id: '4-d6', deck: 4, suit: 'diamonds', rank: '6', visual: '🤖', title: 'AI Gods', concept: 'Machines rule man.', example: 'Matrix / Horizon Zero Dawn' },
-            { id: '4-d7', deck: 4, suit: 'diamonds', rank: '7', visual: '🪓', title: 'Barbarians', concept: 'Chaos and strength.', example: 'Mad Max / Warhammer Orks' },
-            { id: '4-d8', deck: 4, suit: 'diamonds', rank: '8', visual: '🎓', title: 'Academy', concept: 'Knowledge seekers.', example: 'Hogwarts / Fire Emblem' },
-            { id: '4-d9', deck: 4, suit: 'diamonds', rank: '9', visual: '📜', title: 'The Guild', concept: 'Professional network.', example: 'Skyrim Thieves / Monster Hunter' },
-            { id: '4-d10', deck: 4, suit: 'diamonds', rank: '10', visual: '👑', title: 'The Royals', concept: 'Decadent rulers.', example: 'Dishonored / Fable' },
-            { id: '4-dj', deck: 4, suit: 'diamonds', rank: 'J', visual: '💰', title: 'Bandits', concept: 'Lawless opportunists.', example: 'Borderlands / Fallout Raiders' },
-            { id: '4-dq', deck: 4, suit: 'diamonds', rank: 'Q', visual: '🏛️', title: 'Ancients', concept: 'Precursor civilization.', example: 'Forerunners / Protheans' },
-            { id: '4-dk', deck: 4, suit: 'diamonds', rank: 'K', visual: '🧬', title: 'Mutants', concept: 'Biologically altered.', example: 'X-Men / Fallout Ghouls' },
-            { id: '4-da', deck: 4, suit: 'diamonds', rank: 'A', visual: '🦾', title: 'Cyborgs', concept: 'Man machine hybrids.', example: 'Deus Ex / Cyberpunk' },
+            { id: '4-d2', deck: 4, suit: 'diamonds', rank: '2', visual: '🧠', title: 'Hive Mind', concept: 'One shared consciousness.', example: 'The Flood (Halo), Tyranids, Zerg' },
+            { id: '4-d3', deck: 4, suit: 'diamonds', rank: '3', visual: '🏢', title: 'Megacorp', concept: 'Profit over people.', example: 'Arasaka (Cyberpunk), Shinra, Umbrella Corp' },
+            { id: '4-d4', deck: 4, suit: 'diamonds', rank: '4', visual: '🕯️', title: 'The Cult', concept: 'Fanatical devotion.', example: 'Far Cry 5, Resident Evil 4, Silent Hill' },
+            { id: '4-d5', deck: 4, suit: 'diamonds', rank: '5', visual: '✊', title: 'Resistance', concept: 'Underdogs fighting back.', example: 'XCOM, Half-Life 2, Star Wars' },
+            { id: '4-d6', deck: 4, suit: 'diamonds', rank: '6', visual: '🤖', title: 'AI Gods', concept: 'Machines rule man.', example: 'Matrix, Horizon Zero Dawn, I Have No Mouth' },
+            { id: '4-d7', deck: 4, suit: 'diamonds', rank: '7', visual: '🪓', title: 'Barbarians', concept: 'Chaos and strength.', example: 'Mad Max, Warhammer Orks, Conan' },
+            { id: '4-d8', deck: 4, suit: 'diamonds', rank: '8', visual: '🎓', title: 'Academy', concept: 'Knowledge seekers.', example: 'Hogwarts, Fire Emblem, Persona' },
+            { id: '4-d9', deck: 4, suit: 'diamonds', rank: '9', visual: '📜', title: 'The Guild', concept: 'Professional network.', example: 'Skyrim Thieves, Monster Hunter, Witcher' },
+            { id: '4-d10', deck: 4, suit: 'diamonds', rank: '10', visual: '👑', title: 'The Royals', concept: 'Decadent rulers.', example: 'Dishonored, Fable, Crusader Kings' },
+            { id: '4-dj', deck: 4, suit: 'diamonds', rank: 'J', visual: '💰', title: 'Bandits', concept: 'Lawless opportunists.', example: 'Borderlands, Fallout Raiders, Rust' },
+            { id: '4-dq', deck: 4, suit: 'diamonds', rank: 'Q', visual: '🏛️', title: 'Ancients', concept: 'Precursor civilization.', example: 'Forerunners, Protheans, Zonai' },
+            { id: '4-dk', deck: 4, suit: 'diamonds', rank: 'K', visual: '🧬', title: 'Mutants', concept: 'Biologically altered.', example: 'X-Men, Fallout Ghouls, TMNT' },
+            { id: '4-da', deck: 4, suit: 'diamonds', rank: 'A', visual: '🦾', title: 'Cyborgs', concept: 'Man machine hybrids.', example: 'Deus Ex, Cyberpunk, Robocop' },
 
-            // Clubs: Plot Hooks
-            { id: '4-c2', deck: 4, suit: 'clubs', rank: '2', visual: '📜', title: 'Prophecy', concept: 'Chosen one destiny.', example: 'Zelda / Morrowind' },
-            { id: '4-c3', deck: 4, suit: 'clubs', rank: '3', visual: '💎', title: 'The Heist', concept: 'Steal the object.', example: 'GTA V / Payday' },
-            { id: '4-c4', deck: 4, suit: 'clubs', rank: '4', visual: '🏃', title: 'The Escape', concept: 'Get out alive.', example: 'Portal / Hades' },
-            { id: '4-c5', deck: 4, suit: 'clubs', rank: '5', visual: '😡', title: 'Revenge', concept: 'Avenge the fallen.', example: 'God of War / Last of Us 2' },
-            { id: '4-c6', deck: 4, suit: 'clubs', rank: '6', visual: '🕵️', title: 'Mystery', concept: 'Find the truth.', example: 'Outer Wilds / Her Story' },
-            { id: '4-c7', deck: 4, suit: 'clubs', rank: '7', visual: '🏆', title: 'Tournament', concept: 'Prove you are best.', example: 'Mortal Kombat / Unreal' },
-            { id: '4-c8', deck: 4, suit: 'clubs', rank: '8', visual: '🚩', title: 'Colonization', concept: 'Tame the wild.', example: 'Factorio / Rimworld' },
-            { id: '4-c9', deck: 4, suit: 'clubs', rank: '9', visual: '⛺', title: 'Survival', concept: 'Endure the elements.', example: 'The Long Dark / Don\'t Starve' },
-            { id: '4-c10', deck: 4, suit: 'clubs', rank: '10', visual: '⚔️', title: 'The War', concept: 'Turn the tide.', example: 'Call of Duty / Helldivers' },
-            { id: '4-cj', deck: 4, suit: 'clubs', rank: 'J', visual: '🧭', title: 'Discovery', concept: 'Map the unknown.', example: 'No Man\'s Sky / Subnautica' },
-            { id: '4-cq', deck: 4, suit: 'clubs', rank: 'Q', visual: '🦠', title: 'Corruption', concept: 'Stop the spread.', example: 'Terraria / Horizon' },
-            { id: '4-ck', deck: 4, suit: 'clubs', rank: 'K', visual: '🔁', title: 'The Loop', concept: 'Break the cycle.', example: 'Deathloop / Returnal' },
-            { id: '4-ca', deck: 4, suit: 'clubs', rank: 'A', visual: '🕯️', title: 'Sacrifice', concept: 'Give up everything.', example: 'Dark Souls / Hellblade' },
+            { id: '4-c2', deck: 4, suit: 'clubs', rank: '2', visual: '📜', title: 'Prophecy', concept: 'Chosen one destiny.', example: 'Zelda, Morrowind, Harry Potter' },
+            { id: '4-c3', deck: 4, suit: 'clubs', rank: '3', visual: '💎', title: 'The Heist', concept: 'Steal the object.', example: 'GTA V, Payday, Sly Cooper' },
+            { id: '4-c4', deck: 4, suit: 'clubs', rank: '4', visual: '🏃', title: 'The Escape', concept: 'Get out alive.', example: 'Portal, Hades, A Way Out' },
+            { id: '4-c5', deck: 4, suit: 'clubs', rank: '5', visual: '😡', title: 'Revenge', concept: 'Avenge the fallen.', example: 'God of War, Last of Us 2, Sifu' },
+            { id: '4-c6', deck: 4, suit: 'clubs', rank: '6', visual: '🕵️', title: 'Mystery', concept: 'Find the truth.', example: 'Outer Wilds, Her Story, Heavy Rain' },
+            { id: '4-c7', deck: 4, suit: 'clubs', rank: '7', visual: '🏆', title: 'Tournament', concept: 'Prove you are best.', example: 'Mortal Kombat, Unreal, Apex Legends' },
+            { id: '4-c8', deck: 4, suit: 'clubs', rank: '8', visual: '🚩', title: 'Colonization', concept: 'Tame the wild.', example: 'Factorio, Rimworld, Civ' },
+            { id: '4-c9', deck: 4, suit: 'clubs', rank: '9', visual: '⛺', title: 'Survival', concept: 'Endure the elements.', example: 'The Long Dark, Don\'t Starve, Green Hell' },
+            { id: '4-c10', deck: 4, suit: 'clubs', rank: '10', visual: '⚔️', title: 'The War', concept: 'Turn the tide.', example: 'Call of Duty, Helldivers, Foxhole' },
+            { id: '4-cj', deck: 4, suit: 'clubs', rank: 'J', visual: '🧭', title: 'Discovery', concept: 'Map the unknown.', example: 'No Man\'s Sky, Subnautica, Minecraft' },
+            { id: '4-cq', deck: 4, suit: 'clubs', rank: 'Q', visual: '🦠', title: 'Corruption', concept: 'Stop the spread.', example: 'Terraria, Horizon, The Last of Us' },
+            { id: '4-ck', deck: 4, suit: 'clubs', rank: 'K', visual: '🔁', title: 'The Loop', concept: 'Break the cycle.', example: 'Deathloop, Returnal, Majora\'s Mask' },
+            { id: '4-ca', deck: 4, suit: 'clubs', rank: 'A', visual: '🕯️', title: 'Sacrifice', concept: 'Give up everything.', example: 'Dark Souls, Hellblade, Life is Strange' },
 
-            // Joker
-            { id: '4-joker', deck: 4, suit: 'joker', rank: '★', visual: '🌍', title: 'Open World', concept: 'Go anywhere.', example: 'Breath of the Wild' },
+            { id: '4-joker', deck: 4, suit: 'joker', rank: '★', visual: '🌍', title: 'Open World', concept: 'Go anywhere.', example: 'Breath of the Wild, Elden Ring, Skyrim' },
         ];
 
         // --- App Logic ---
@@ -458,9 +450,73 @@
             },
 
             init() {
-                this.shuffleDecks();
+                // Try to load saved state first
+                const loaded = this.loadState();
+                
+                // If load failed or no save exists, initialize fresh
+                if (!loaded) {
+                    this.shuffleDecks();
+                }
+                
                 this.render();
                 this.setupGestures();
+            },
+
+            // --- Persistence Logic ---
+            
+            saveState() {
+                try {
+                    const stateToSave = {
+                        activeDecks: this.state.activeDecks,
+                        // We save IDs only to allow "hydration" on load (getting latest text updates)
+                        currentDeckIds: this.state.currentDeck.map(c => c.id),
+                        drawIndex: this.state.drawIndex,
+                        keptCardIds: this.state.keptCards.map(c => c.id)
+                    };
+                    localStorage.setItem('gamedeck_state_v1', JSON.stringify(stateToSave));
+                } catch (e) {
+                    console.error("Save failed", e);
+                }
+            },
+
+            loadState() {
+                const json = localStorage.getItem('gamedeck_state_v1');
+                if(!json) return false;
+                
+                try {
+                    const saved = JSON.parse(json);
+                    
+                    // Create a lookup map for all available cards (fresh data)
+                    const allCards = [...DECK_1, ...DECK_2, ...DECK_3, ...DECK_4];
+                    const cardMap = allCards.reduce((acc, c) => { acc[c.id] = c; return acc; }, {});
+
+                    // Restore Active Decks
+                    this.state.activeDecks = saved.activeDecks || { 1: true, 2: false, 3: false, 4: false };
+                    
+                    // Restore Draw Index
+                    this.state.drawIndex = saved.drawIndex || 0;
+                    
+                    // Hydrate Current Deck: Restore order, but use fresh data objects
+                    if (saved.currentDeckIds && saved.currentDeckIds.length > 0) {
+                        this.state.currentDeck = saved.currentDeckIds
+                            .map(id => cardMap[id])
+                            .filter(Boolean); // Remove any IDs that might have been deleted from code
+                    } else {
+                        return false; // Force re-shuffle if deck is missing
+                    }
+                    
+                    // Hydrate Kept Cards
+                    if (saved.keptCardIds) {
+                        this.state.keptCards = saved.keptCardIds
+                            .map(id => cardMap[id])
+                            .filter(Boolean);
+                    }
+
+                    return true;
+                } catch(e) {
+                    console.error("Load failed", e);
+                    return false;
+                }
             },
 
             toggleMobileMenu() {
@@ -476,7 +532,6 @@
                 if (this.state.activeDecks[4]) combined = [...combined, ...DECK_4];
                 
                 if(combined.length === 0) {
-                    // Fallback to deck 1 if nothing selected to prevent crash
                     combined = [...DECK_1]; 
                     this.state.activeDecks[1] = true;
                 }
@@ -489,22 +544,22 @@
                 
                 this.state.currentDeck = combined;
                 this.state.drawIndex = 0;
+                this.saveState(); // Save after shuffle
             },
 
             toggleDeck(id) {
                 const newActive = { ...this.state.activeDecks, [id]: !this.state.activeDecks[id] };
-                // Prevent turning off all decks
                 const hasActive = Object.values(newActive).some(val => val === true);
                 if (!hasActive) return;
 
                 this.state.activeDecks = newActive;
-                this.shuffleDecks();
+                this.shuffleDecks(); // Triggers save
                 this.render();
             },
 
             setView(viewName) {
                 this.state.view = viewName;
-                this.state.mobileMenuOpen = false; // Close menu on selection
+                this.state.mobileMenuOpen = false;
                 this.render();
             },
 
@@ -533,6 +588,7 @@
                     
                     if (!this.state.keptCards.find(c => c.id === currentCard.id)) {
                         this.state.keptCards.push(currentCard);
+                        this.saveState(); // Save on keep
                     }
 
                     setTimeout(() => {
@@ -549,7 +605,7 @@
                 if(cardEl) cardEl.classList.add('card-reshuffle');
                 this.state.animating = true;
                 setTimeout(() => {
-                    this.shuffleDecks();
+                    this.shuffleDecks(); // Triggers save
                     this.state.animating = false;
                     this.render();
                 }, 400);
@@ -560,16 +616,19 @@
                     this.shuffleDecks();
                 } else {
                     this.state.drawIndex++;
+                    this.saveState(); // Save progress
                 }
             },
 
             clearSaved() {
                 this.state.keptCards = [];
+                this.saveState(); // Save clear
                 this.render();
             },
 
             removeSaved(cardId) {
                 this.state.keptCards = this.state.keptCards.filter(c => c.id !== cardId);
+                this.saveState(); // Save remove
                 this.render();
             },
 
@@ -658,7 +717,7 @@
                         <p class="text-sm font-medium text-slate-600 mb-2 px-2 italic leading-relaxed">"${card.concept}"</p>
                         
                         <div class="mt-auto mb-16 bg-white/60 backdrop-blur-sm rounded-lg p-2 text-xs text-slate-500 border border-black/5 w-full">
-                            <span class="font-bold block mb-0.5 text-slate-400 uppercase text-[9px]">Example</span>
+                            <span class="font-bold block mb-0.5 text-slate-400 uppercase text-[9px]">Examples</span>
                             <span class="text-slate-700 font-medium">${card.example}</span>
                         </div>
                     </div>
