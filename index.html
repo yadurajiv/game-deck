@@ -18,7 +18,7 @@
         }
         
         .card-enter {
-            animation: cardEnter 0.3s ease-out forwards;
+            animation: cardEnter 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
         }
         
         .card-discard-left {
@@ -29,27 +29,37 @@
             animation: keepRight 0.3s ease-in forwards;
         }
         
-        .card-reshuffle {
-            animation: reshuffle 0.4s ease-in-out;
+        .card-burn {
+            animation: burnCard 0.4s ease-in forwards;
+        }
+
+        .card-reshuffle-enter {
+            animation: reshuffleEnter 0.5s ease-out forwards;
         }
 
         @keyframes cardEnter {
-            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            from { opacity: 0; transform: translateY(40px) scale(0.9); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         @keyframes discardLeft {
-            to { opacity: 0; transform: translateX(-100%) rotate(-15deg); }
+            to { opacity: 0; transform: translateX(-120%) rotate(-20deg); }
         }
 
         @keyframes keepRight {
-            to { opacity: 0; transform: translateX(100%) rotate(15deg); }
+            to { opacity: 0; transform: translateX(120%) rotate(20deg); }
         }
 
-        @keyframes reshuffle {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-            100% { transform: translateY(0); }
+        @keyframes burnCard {
+            0% { transform: scale(1); filter: grayscale(0%); }
+            50% { transform: scale(0.9); filter: grayscale(100%) brightness(0.5); }
+            100% { transform: scale(0) translateY(50px); opacity: 0; }
+        }
+
+        @keyframes reshuffleEnter {
+            0% { transform: translateY(-50px) scale(0.9); opacity: 0; }
+            50% { transform: translateY(10px) scale(1.02); opacity: 1; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
         }
 
         .no-scrollbar::-webkit-scrollbar {
@@ -72,7 +82,7 @@
                 <h1 class="font-bold text-white tracking-wide">GameDeck</h1>
             </div>
             <div class="flex items-center gap-3">
-                <span class="text-xs bg-indigo-900 text-indigo-300 px-2 py-0.5 rounded-full">v3.3</span>
+                <span class="text-xs bg-indigo-900 text-indigo-300 px-2 py-0.5 rounded-full">v3.4</span>
                 <button onclick="app.toggleMobileMenu()" class="md:hidden text-slate-400 hover:text-white transition-colors p-1">
                     <i data-lucide="menu" id="menu-icon" class="w-6 h-6"></i>
                 </button>
@@ -136,7 +146,7 @@
                 <p id="card-counter" class="text-slate-500 text-sm mt-0.5 md:mt-1">Card 1 of 50</p>
             </div>
 
-            <div id="card-wrapper" class="card-container w-72 h-96 relative touch-none select-none shadow-xl rounded-2xl flex-shrink-0">
+            <div id="card-wrapper" class="card-container w-72 h-96 relative touch-none select-none shadow-xl rounded-2xl flex-shrink-0 bg-slate-200">
                 <!-- Card render here -->
             </div>
 
@@ -152,13 +162,18 @@
                     <span class="text-xs font-bold text-slate-500">Discard</span>
                 </button>
 
+                <!-- Burn Button -->
+                <button onclick="app.burn()" class="w-12 flex flex-col items-center justify-center p-3 md:p-4 bg-slate-200 rounded-xl shadow-sm hover:bg-slate-300 transition-all group active:scale-95" title="Burn (Remove from Deck)">
+                    <i data-lucide="flame" class="text-slate-500 group-hover:text-orange-500 mb-1 w-5 h-5"></i>
+                </button>
+
                 <button onclick="app.keep()" class="flex-1 flex flex-col items-center justify-center p-3 md:p-4 bg-indigo-600 rounded-xl shadow-lg shadow-indigo-200 hover:bg-indigo-500 hover:shadow-indigo-300 transition-all transform hover:-translate-y-1 active:scale-95">
                     <i data-lucide="save" class="text-white mb-1 w-5 h-5"></i>
                     <span class="text-xs font-bold text-white">Keep</span>
                 </button>
             </div>
             
-            <button onclick="app.reshuffle()" class="mt-4 md:mt-8 flex items-center text-slate-400 hover:text-indigo-600 text-xs font-bold uppercase tracking-widest transition-colors p-2 mb-safe">
+            <button onclick="app.reshuffle(true)" class="mt-4 md:mt-8 flex items-center text-slate-400 hover:text-indigo-600 text-xs font-bold uppercase tracking-widest transition-colors p-2 mb-safe">
                 <i data-lucide="refresh-cw" class="mr-2 w-3 h-3"></i> Reshuffle Deck
             </button>
         </div>
@@ -187,7 +202,10 @@
     <!-- Gallery View Template -->
     <template id="tpl-gallery">
         <div class="max-w-6xl mx-auto pb-10 w-full pt-4 px-2 md:px-0">
-            <h2 class="text-2xl font-bold text-slate-800 mb-8">Full Deck Gallery</h2>
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-slate-800">Full Deck Gallery</h2>
+                <p class="text-sm text-slate-500 mt-1">Showing all cards from active decks. <span class="text-orange-600 font-medium">Burned cards</span> are dimmed; tap to restore.</p>
+            </div>
             <div id="gallery-content">
                 <!-- Gallery Groups Injected Here -->
             </div>
@@ -444,18 +462,23 @@
                 currentDeck: [],
                 drawIndex: 0,
                 keptCards: [],
+                burnedCardIds: [], // IDs of cards removed from deck
                 view: 'draw',
                 animating: false,
                 mobileMenuOpen: false
             },
 
             init() {
-                // Try to load saved state first
                 const loaded = this.loadState();
                 
-                // If load failed or no save exists, initialize fresh
                 if (!loaded) {
                     this.shuffleDecks();
+                } else {
+                    // Ensure burned cards are removed from restored currentDeck
+                    if (this.state.burnedCardIds.length > 0) {
+                        this.state.currentDeck = this.state.currentDeck.filter(c => !this.state.burnedCardIds.includes(c.id));
+                        if(this.state.currentDeck.length === 0) this.shuffleDecks();
+                    }
                 }
                 
                 this.render();
@@ -463,49 +486,43 @@
             },
 
             // --- Persistence Logic ---
-            
             saveState() {
                 try {
                     const stateToSave = {
                         activeDecks: this.state.activeDecks,
-                        // We save IDs only to allow "hydration" on load (getting latest text updates)
                         currentDeckIds: this.state.currentDeck.map(c => c.id),
                         drawIndex: this.state.drawIndex,
-                        keptCardIds: this.state.keptCards.map(c => c.id)
+                        keptCardIds: this.state.keptCards.map(c => c.id),
+                        burnedCardIds: this.state.burnedCardIds
                     };
-                    localStorage.setItem('gamedeck_state_v1', JSON.stringify(stateToSave));
+                    localStorage.setItem('gamedeck_state_v2', JSON.stringify(stateToSave));
                 } catch (e) {
                     console.error("Save failed", e);
                 }
             },
 
             loadState() {
-                const json = localStorage.getItem('gamedeck_state_v1');
+                const json = localStorage.getItem('gamedeck_state_v2');
                 if(!json) return false;
                 
                 try {
                     const saved = JSON.parse(json);
                     
-                    // Create a lookup map for all available cards (fresh data)
                     const allCards = [...DECK_1, ...DECK_2, ...DECK_3, ...DECK_4];
                     const cardMap = allCards.reduce((acc, c) => { acc[c.id] = c; return acc; }, {});
 
-                    // Restore Active Decks
                     this.state.activeDecks = saved.activeDecks || { 1: true, 2: false, 3: false, 4: false };
-                    
-                    // Restore Draw Index
                     this.state.drawIndex = saved.drawIndex || 0;
+                    this.state.burnedCardIds = saved.burnedCardIds || [];
                     
-                    // Hydrate Current Deck: Restore order, but use fresh data objects
                     if (saved.currentDeckIds && saved.currentDeckIds.length > 0) {
                         this.state.currentDeck = saved.currentDeckIds
                             .map(id => cardMap[id])
-                            .filter(Boolean); // Remove any IDs that might have been deleted from code
+                            .filter(Boolean);
                     } else {
-                        return false; // Force re-shuffle if deck is missing
+                        return false; 
                     }
                     
-                    // Hydrate Kept Cards
                     if (saved.keptCardIds) {
                         this.state.keptCards = saved.keptCardIds
                             .map(id => cardMap[id])
@@ -524,7 +541,7 @@
                 this.render();
             },
 
-            shuffleDecks() {
+            shuffleDecks(animate = false) {
                 let combined = [];
                 if (this.state.activeDecks[1]) combined = [...combined, ...DECK_1];
                 if (this.state.activeDecks[2]) combined = [...combined, ...DECK_2];
@@ -536,6 +553,21 @@
                     this.state.activeDecks[1] = true;
                 }
 
+                // Filter out burned cards
+                combined = combined.filter(c => !this.state.burnedCardIds.includes(c.id));
+                
+                // If all cards are burned/gone, restore them to prevent empty deck crash? 
+                // Or just show empty state? For now, let's assume users won't burn 200 cards.
+                // If they do, let's just restore everything for safety.
+                if (combined.length === 0) {
+                    this.state.burnedCardIds = [];
+                    // Re-fetch source
+                    if (this.state.activeDecks[1]) combined = [...combined, ...DECK_1];
+                    if (this.state.activeDecks[2]) combined = [...combined, ...DECK_2];
+                    if (this.state.activeDecks[3]) combined = [...combined, ...DECK_3];
+                    if (this.state.activeDecks[4]) combined = [...combined, ...DECK_4];
+                }
+
                 // Fisher-Yates shuffle
                 for (let i = combined.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
@@ -544,7 +576,7 @@
                 
                 this.state.currentDeck = combined;
                 this.state.drawIndex = 0;
-                this.saveState(); // Save after shuffle
+                this.saveState();
             },
 
             toggleDeck(id) {
@@ -553,7 +585,7 @@
                 if (!hasActive) return;
 
                 this.state.activeDecks = newActive;
-                this.shuffleDecks(); // Triggers save
+                this.shuffleDecks(); 
                 this.render();
             },
 
@@ -563,6 +595,8 @@
                 this.render();
             },
 
+            // --- Actions ---
+
             discard() {
                 if (this.state.animating) return;
                 const cardEl = document.getElementById('card-wrapper').firstElementChild;
@@ -571,8 +605,6 @@
                     this.state.animating = true;
                     setTimeout(() => {
                         this.advanceDeck();
-                        this.state.animating = false;
-                        this.render();
                     }, 300);
                 }
             },
@@ -588,47 +620,90 @@
                     
                     if (!this.state.keptCards.find(c => c.id === currentCard.id)) {
                         this.state.keptCards.push(currentCard);
-                        this.saveState(); // Save on keep
+                        this.saveState(); 
                     }
 
                     setTimeout(() => {
                         this.advanceDeck();
-                        this.state.animating = false;
-                        this.render();
                     }, 300);
                 }
             },
-            
-            reshuffle() {
-                if(this.state.animating) return;
+
+            burn() {
+                if (this.state.animating) return;
                 const cardEl = document.getElementById('card-wrapper').firstElementChild;
-                if(cardEl) cardEl.classList.add('card-reshuffle');
+                const currentCard = this.state.currentDeck[this.state.drawIndex];
+
+                if (cardEl) {
+                    cardEl.classList.add('card-burn');
+                    this.state.animating = true;
+                    
+                    if (!this.state.burnedCardIds.includes(currentCard.id)) {
+                        this.state.burnedCardIds.push(currentCard.id);
+                        this.saveState();
+                    }
+
+                    setTimeout(() => {
+                        this.advanceDeck();
+                    }, 400); // slightly longer for burn anim
+                }
+            },
+            
+            reshuffle(manual = false) {
+                if(this.state.animating) return;
+                
+                const cardEl = document.getElementById('card-wrapper').firstElementChild;
+                if(cardEl) {
+                    // If manually triggered, animate the current card out first?
+                    // Or just swap instantly with a shuffle animation?
+                    // Let's fade out current card then shuffle in.
+                    cardEl.style.transition = 'all 0.2s ease-in';
+                    cardEl.style.opacity = '0';
+                    cardEl.style.transform = 'scale(0.9)';
+                }
+
                 this.state.animating = true;
                 setTimeout(() => {
-                    this.shuffleDecks(); // Triggers save
+                    this.shuffleDecks();
                     this.state.animating = false;
-                    this.render();
-                }, 400);
+                    this.render(true); // true = force shuffle enter animation
+                }, 250);
+            },
+
+            restoreBurned(id) {
+                this.state.burnedCardIds = this.state.burnedCardIds.filter(bid => bid !== id);
+                this.saveState();
+                
+                // If we restore, we don't necessarily need to add it to current deck immediately,
+                // it will appear next shuffle. Or we can insert it?
+                // For simplicity, it appears next shuffle.
+                this.render();
             },
 
             advanceDeck() {
+                // If we are at the last card
                 if (this.state.drawIndex >= this.state.currentDeck.length - 1) {
+                    // Auto Reshuffle logic
                     this.shuffleDecks();
+                    this.state.animating = false;
+                    this.render(true); // Pass true to trigger reshuffle animation
                 } else {
                     this.state.drawIndex++;
-                    this.saveState(); // Save progress
+                    this.saveState();
+                    this.state.animating = false;
+                    this.render();
                 }
             },
 
             clearSaved() {
                 this.state.keptCards = [];
-                this.saveState(); // Save clear
+                this.saveState(); 
                 this.render();
             },
 
             removeSaved(cardId) {
                 this.state.keptCards = this.state.keptCards.filter(c => c.id !== cardId);
-                this.saveState(); // Save remove
+                this.saveState();
                 this.render();
             },
 
@@ -671,7 +746,7 @@
                 return "Unknown";
             },
 
-            renderCardHTML(card, animate = false) {
+            renderCardHTML(card, animationClass = '') {
                 const isRed = ['hearts', 'diamonds', 'joker'].includes(card.suit);
                 const textColor = isRed ? 'text-red-600' : 'text-slate-800';
                 const borderColor = isRed ? 'border-red-200' : 'border-slate-200';
@@ -688,7 +763,7 @@
                 const deckName = this.getDeckName(card.deck);
 
                 return `
-                <div class="w-full h-full rounded-2xl shadow-2xl border-4 ${borderColor} bg-gradient-to-br ${bgGradient} flex flex-col p-4 relative overflow-hidden select-none bg-white ${animate ? 'card-enter' : ''}">
+                <div class="w-full h-full rounded-2xl shadow-2xl border-4 ${borderColor} bg-gradient-to-br ${bgGradient} flex flex-col p-4 relative overflow-hidden select-none bg-white ${animationClass}">
                     <!-- Deck Badge -->
                     <div class="absolute top-0 left-0 right-0 flex justify-center pt-2">
                         <span class="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-black/5 text-black/40">
@@ -725,7 +800,7 @@
             },
 
             // --- Render Logic ---
-            render() {
+            render(isReshuffle = false) {
                 const content = document.getElementById('main-content');
                 const sidebarContent = document.getElementById('sidebar-content');
                 const menuIcon = document.getElementById('menu-icon');
@@ -768,7 +843,14 @@
                 // Views
                 if (this.state.view === 'draw') {
                     const tpl = document.getElementById('tpl-draw');
-                    content.innerHTML = tpl.innerHTML;
+                    if(content.innerHTML === '') content.innerHTML = tpl.innerHTML;
+                    
+                    // Only full re-render if we moved away or init, otherwise update in place is smoother usually, 
+                    // but for simplicity we replace innerHTML for view switching.
+                    // To support in-place updates during animation, we check if wrapper exists.
+                    if (!document.getElementById('card-wrapper')) {
+                        content.innerHTML = tpl.innerHTML;
+                    }
                     
                     const activeCount = Object.values(this.state.activeDecks).filter(Boolean).length;
                     const deckLabel = activeCount > 1 ? `Combined Deck (${activeCount})` : 'Single Deck';
@@ -778,7 +860,12 @@
 
                     const wrapper = document.getElementById('card-wrapper');
                     const currentCard = this.state.currentDeck[this.state.drawIndex];
-                    wrapper.innerHTML = this.renderCardHTML(currentCard, true); 
+                    
+                    // If isReshuffle, we use the reshuffle entrance animation
+                    const animClass = isReshuffle ? 'card-reshuffle-enter' : 'card-enter';
+                    
+                    // Always re-render card content
+                    wrapper.innerHTML = this.renderCardHTML(currentCard, animClass); 
                     
                     this.setupGestures();
 
@@ -817,7 +904,14 @@
                     
                     let html = '';
                     suits.forEach(suit => {
-                        const cards = this.state.currentDeck.filter(c => c.suit === suit)
+                        // Gather ALL cards from active decks to show in gallery
+                        let allActiveCards = [];
+                        if (this.state.activeDecks[1]) allActiveCards = [...allActiveCards, ...DECK_1];
+                        if (this.state.activeDecks[2]) allActiveCards = [...allActiveCards, ...DECK_2];
+                        if (this.state.activeDecks[3]) allActiveCards = [...allActiveCards, ...DECK_3];
+                        if (this.state.activeDecks[4]) allActiveCards = [...allActiveCards, ...DECK_4];
+
+                        const cards = allActiveCards.filter(c => c.suit === suit)
                             .sort((a,b) => {
                                 const order = ['2','3','4','5','6','7','8','9','10','J','Q','K','A','★'];
                                 return order.indexOf(a.rank) - order.indexOf(b.rank);
@@ -843,8 +937,18 @@
                                 <span class="text-xs text-slate-400 ml-auto font-mono bg-slate-100 px-2 py-0.5 rounded-full">${cards.length} Cards</span>
                             </div>
                             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                                ${cards.map(c => `
-                                    <div class="bg-white rounded-lg p-3 shadow-sm border border-slate-200 hover:border-indigo-300 transition-colors flex flex-col items-center text-center relative overflow-hidden group">
+                                ${cards.map(c => {
+                                    const isBurned = this.state.burnedCardIds.includes(c.id);
+                                    const opacityClass = isBurned ? 'opacity-50 grayscale hover:grayscale-0 hover:opacity-100' : '';
+                                    const burnedOverlay = isBurned ? `
+                                        <div class="absolute inset-0 bg-slate-900/10 flex items-center justify-center z-20 pointer-events-none group-hover:hidden">
+                                            <div class="bg-black/70 text-white text-[10px] uppercase font-bold px-2 py-1 rounded-full">Burned</div>
+                                        </div>
+                                    ` : '';
+
+                                    return `
+                                    <div onclick="${isBurned ? `app.restoreBurned('${c.id}')` : ''}" class="cursor-pointer ${opacityClass} bg-white rounded-lg p-3 shadow-sm border border-slate-200 hover:border-indigo-300 transition-all flex flex-col items-center text-center relative overflow-hidden group">
+                                        ${burnedOverlay}
                                         <div class="absolute top-1 right-2 text-[8px] font-bold uppercase text-slate-300">${c.deck === 1 ? 'CREATIVE' : c.deck === 2 ? 'MECH' : c.deck === 3 ? 'ART' : 'WORLD'}</div>
                                         <div class="text-2xl mb-1 z-10">${c.visual}</div>
                                         <div class="text-xs font-bold uppercase z-10 ${colorClass}">${c.rank}</div>
@@ -854,7 +958,7 @@
                                             <i data-lucide="${suitIcon}" class="w-10 h-10 fill-current"></i>
                                         </div>
                                     </div>
-                                `).join('')}
+                                `}).join('')}
                             </div>
                         </div>`;
                     });
@@ -890,7 +994,7 @@
                         if (distanceX > minSwipe) this.discard(); // Swipe Left
                         else if (distanceX < -minSwipe) this.keep(); // Swipe Right
                     } else {
-                        if (distanceY < -minSwipe) this.reshuffle(); // Pull Down
+                        if (distanceY < -minSwipe) this.reshuffle(true); // Pull Down
                     }
                 });
             }
