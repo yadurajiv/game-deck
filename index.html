@@ -82,7 +82,7 @@
                 <h1 class="font-bold text-white tracking-wide">GameDeck</h1>
             </div>
             <div class="flex items-center gap-3">
-                <span class="text-xs bg-indigo-900 text-indigo-300 px-2 py-0.5 rounded-full">v3.4</span>
+                <span class="text-xs bg-indigo-900 text-indigo-300 px-2 py-0.5 rounded-full">v3.5</span>
                 <button onclick="app.toggleMobileMenu()" class="md:hidden text-slate-400 hover:text-white transition-colors p-1">
                     <i data-lucide="menu" id="menu-icon" class="w-6 h-6"></i>
                 </button>
@@ -124,6 +124,11 @@
                     </button>
                     <button onclick="app.toggleDeck(4)" id="btn-deck-4" class="w-full flex items-center justify-between p-3 md:p-2 rounded border text-sm border-slate-700 text-slate-500 transition-colors">
                         <span>4. World & Setting</span>
+                        <div class="indicator w-2 h-2 rounded-full bg-indigo-500 hidden"></div>
+                    </button>
+                    <!-- NEW DECK 5 -->
+                    <button onclick="app.toggleDeck(5)" id="btn-deck-5" class="w-full flex items-center justify-between p-3 md:p-2 rounded border text-sm border-slate-700 text-slate-500 transition-colors">
+                        <span>5. Genre Mashup</span>
                         <div class="indicator w-2 h-2 rounded-full bg-indigo-500 hidden"></div>
                     </button>
                 </div>
@@ -213,7 +218,7 @@
     </template>
 
     <script>
-        // --- Data Definitions (Expanded with more examples) ---
+        // --- Data Definitions ---
         
         const DECK_1 = [
             { id: '1-h2', deck: 1, suit: 'hearts', rank: '2', visual: '🕹️', title: 'Combine Games', concept: 'Mix aspects from different games.', example: 'Monopoly GO!, Palworld, Craftopia' },
@@ -455,10 +460,76 @@
             { id: '4-joker', deck: 4, suit: 'joker', rank: '★', visual: '🌍', title: 'Open World', concept: 'Go anywhere.', example: 'Breath of the Wild, Elden Ring, Skyrim' },
         ];
 
+        // DECK 5: Genre Mashups (Modern Trends)
+        const DECK_5 = [
+            // Hearts: Action & Shooter Blends
+            { id: '5-h2', deck: 5, suit: 'hearts', rank: '2', visual: '🎸', title: 'Rhythm FPS', concept: 'Shoot on the beat.', example: 'Metal Hellsinger, Hi-Fi Rush, BPM' },
+            { id: '5-h3', deck: 5, suit: 'hearts', rank: '3', visual: '🗡️', title: 'Melee Royale', concept: 'Battle Royale with swords.', example: 'Naraka: Bladepoint, Rumbleverse, My Hero Ultra' },
+            { id: '5-h4', deck: 5, suit: 'hearts', rank: '4', visual: '🃏', title: 'Card Shooter', concept: 'Deckbuilding meets FPS.', example: 'Neon White, Friends vs Friends, Card Shark' },
+            { id: '5-h5', deck: 5, suit: 'hearts', rank: '5', visual: '🧛', title: 'Survivors-like', concept: 'Bullet Hell + Idle stats.', example: 'Vampire Survivors, Brotato, 20 Min Till Dawn' },
+            { id: '5-h6', deck: 5, suit: 'hearts', rank: '6', visual: '🌾', title: 'Action Farm', concept: 'Side-scrolling combat + Rice.', example: 'Sakuna: Of Rice and Ruin, Dave the Diver' },
+            { id: '5-h7', deck: 5, suit: 'hearts', rank: '7', visual: '🥊', title: 'Fighting RPG', concept: 'Street Fighter open world.', example: 'SF6 World Tour, Granblue Fantasy Versus' },
+            { id: '5-h8', deck: 5, suit: 'hearts', rank: '8', visual: '📸', title: 'Perspective Puzzle', concept: 'FPS mechanics solve logic.', example: 'Viewfinder, Superliminal, Maquette' },
+            { id: '5-h9', deck: 5, suit: 'hearts', rank: '9', visual: '🎥', title: 'Extraction Horror', concept: 'Get footage, get out.', example: 'Content Warning, Lethal Company' },
+            { id: '5-h10', deck: 5, suit: 'hearts', rank: '10', visual: '🛣️', title: 'MOBA Shooter', concept: 'Lanes + Aiming.', example: 'Deadlock, Overwatch 2, Smite 2' },
+            { id: '5-hj', deck: 5, suit: 'hearts', rank: 'J', visual: '🥷', title: 'Stealth Tactics', concept: 'RTS view + Ninja stealth.', example: 'Shadow Gambit, Desperados 3, Shadow Tactics' },
+            { id: '5-hq', deck: 5, suit: 'hearts', rank: 'Q', visual: '🏃', title: 'Platform Royale', concept: 'Wipeout course + PvP.', example: 'Fall Guys, Stumble Guys, Eggy Party' },
+            { id: '5-hk', deck: 5, suit: 'hearts', rank: 'K', visual: '🕵️', title: 'Social Shooter', concept: 'Spy vs Spy deduction.', example: 'Deceive Inc, Among Us VR, The Finals' },
+            { id: '5-ha', deck: 5, suit: 'hearts', rank: 'A', visual: '🔫', title: 'Roguelite FPS', concept: 'Run, Gun, Die, Repeat.', example: 'Gunfire Reborn, Roboquest, Deadlink' },
+
+            // Spades: Strategy & Sim Blends
+            { id: '5-s2', deck: 5, suit: 'spades', rank: '2', visual: '⛈️', title: 'Roguelite City', concept: 'Build a city against storms.', example: 'Against the Storm, Ratopia, DotAGE' },
+            { id: '5-s3', deck: 5, suit: 'spades', rank: '3', visual: '🏭', title: 'Factory Defense', concept: 'Automation + Tower Defense.', example: 'Factorio, The Riftbreaker, Mindustry' },
+            { id: '5-s4', deck: 5, suit: 'spades', rank: '4', visual: '🏜️', title: 'RTS 4X', concept: 'Grand scale in real time.', example: 'Dune: Spice Wars, Sins of a Solar Empire 2' },
+            { id: '5-s5', deck: 5, suit: 'spades', rank: '5', visual: '❄️', title: 'Narrative Colony', concept: 'Survival Sim + Moral Story.', example: 'Frostpunk 2, Rimworld, Ixion' },
+            { id: '5-s6', deck: 5, suit: 'spades', rank: '6', visual: '🍣', title: 'Manage & Hunt', concept: 'Day: Action, Night: Tycoon.', example: 'Dave the Diver, Moonlighter, Cult of the Lamb' },
+            { id: '5-s7', deck: 5, suit: 'spades', rank: '7', visual: '🏹', title: 'Action TD', concept: 'Shooter + Tower Defense.', example: 'Orcs Must Die 3, Sanctum, Dome Keeper' },
+            { id: '5-s8', deck: 5, suit: 'spades', rank: '8', visual: '♟️', title: 'Horror Tactics', concept: 'Turn-based dread.', example: 'Othercide, World of Horror, Darkest Dungeon 2' },
+            { id: '5-s9', deck: 5, suit: 'spades', rank: '9', visual: '📦', title: 'Cozy Puzzle', concept: 'Organizing as gameplay.', example: 'Unpacking, Wilmot\'s Warehouse, A Little to the Left' },
+            { id: '5-s10', deck: 5, suit: 'spades', rank: '10', visual: '🔫', title: 'Pal-Like', concept: 'Monster Taming + Guns/Survival.', example: 'Palworld, Craftopia, Ooblets' },
+            { id: '5-sj', deck: 5, suit: 'spades', rank: 'J', visual: '🃏', title: 'Card Strategy', concept: '4X/RTS simplified to cards.', example: 'Songs of Silence, Dune Imperium, Marvel Midnight Suns' },
+            { id: '5-sq', deck: 5, suit: 'spades', rank: 'Q', visual: '🎒', title: 'Inventory Battler', concept: 'Tetris inventory PvP.', example: 'Backpack Battles, Backpack Hero' },
+            { id: '5-sk', deck: 5, suit: 'spades', rank: 'K', visual: '🌿', title: 'Reverse City', concept: 'Build nature, remove city.', example: 'Terra Nil, Cloud Gardens' },
+            { id: '5-sa', deck: 5, suit: 'spades', rank: 'A', visual: '🪓', title: 'Voxel RPG', concept: 'Minecraft + Dark Souls/Zelda.', example: 'Enshrouded, Valheim, V Rising' },
+
+            // Diamonds: RPG & Progression Blends
+            { id: '5-d2', deck: 5, suit: 'diamonds', rank: '2', visual: '💍', title: 'Open Souls', concept: 'Souls combat in open world.', example: 'Elden Ring, Lords of the Fallen' },
+            { id: '5-d3', deck: 5, suit: 'diamonds', rank: '3', visual: '🐣', title: 'Metroid-Tamer', concept: 'Platforming with pets.', example: 'Monster Sanctuary, Cassette Beasts' },
+            { id: '5-d4', deck: 5, suit: 'diamonds', rank: '4', visual: '⭐', title: 'Active Turn', concept: 'Turn-based + Timing hits.', example: 'Sea of Stars, Yakuza: Like a Dragon, Mario RPG' },
+            { id: '5-d5', deck: 5, suit: 'diamonds', rank: '5', visual: '🎰', title: 'Poker Rogue', concept: 'Gambling mechanics used for combat.', example: 'Balatro, Dungeons & Degenerate Gamblers' },
+            { id: '5-d6', deck: 5, suit: 'diamonds', rank: '6', visual: '⛳', title: 'Sports RPG', concept: 'Save the world via Golf.', example: 'Sports Story, Golf Story, Dodgeball Academia' },
+            { id: '5-d7', deck: 5, suit: 'diamonds', rank: '7', visual: '🎱', title: 'Physics RPG', concept: 'Pachinko/Pinball damage.', example: 'Peglin, Roll Player, Creature in the Well' },
+            { id: '5-d8', deck: 5, suit: 'diamonds', rank: '8', visual: '🏰', title: 'Dungeon Royale', concept: 'PvPvE dungeon crawler.', example: 'Dark and Darker, Dungeonborne' },
+            { id: '5-d9', deck: 5, suit: 'diamonds', rank: '9', visual: '🏡', title: 'Cozy MMO', concept: 'WoW without the war.', example: 'Palia, Sky: Children of Light' },
+            { id: '5-d10', deck: 5, suit: 'diamonds', rank: '10', visual: '🦾', title: 'Shooter RPG', concept: 'Deep RPG stats in FPS.', example: 'Cyberpunk 2077, Starfield' },
+            { id: '5-dj', deck: 5, suit: 'diamonds', rank: 'J', visual: '🎲', title: 'Dating CRPG', concept: 'Hardcore D&D + Romance.', example: 'Baldur\'s Gate 3, Boyfriend Dungeon' },
+            { id: '5-dq', deck: 5, suit: 'diamonds', rank: 'Q', visual: '🎲', title: 'Dice Rogue', concept: 'Yahtzee as combat.', example: 'Dicey Dungeons, Slice & Dice' },
+            { id: '5-dk', deck: 5, suit: 'diamonds', rank: 'K', visual: '💰', title: 'Shopkeeper RPG', concept: 'Run the item shop.', example: 'Moonlighter, Potionomics, Recettear' },
+            { id: '5-da', deck: 5, suit: 'diamonds', rank: 'A', visual: '♟️', title: 'Social Tactics', concept: 'Grid combat + Hangouts.', example: 'Persona 5 Tactica, Fire Emblem Engage, Midnight Suns' },
+
+            // Clubs: Niche & Vibe Blends
+            { id: '5-c2', deck: 5, suit: 'clubs', rank: '2', visual: '🎣', title: 'Eldritch Fish', concept: 'Relaxing fishing + Horror.', example: 'Dredge, Dave the Diver (Depths)' },
+            { id: '5-c3', deck: 5, suit: 'clubs', rank: '3', visual: '🍳', title: 'Cooking Rogue', concept: 'Restaurant chaos run.', example: 'PlateUp!, Overcooked' },
+            { id: '5-c4', deck: 5, suit: 'clubs', rank: '4', visual: '📖', title: 'VN Strategy', concept: 'Novel + Grid Combat.', example: 'Digimon Survive, 13 Sentinels: Aegis Rim' },
+            { id: '5-c5', deck: 5, suit: 'clubs', rank: '5', visual: '⌨️', title: 'Typing Exorcism', concept: 'Bullet hell + Typing.', example: 'The Textorcist, Epistory' },
+            { id: '5-c6', deck: 5, suit: 'clubs', rank: '6', visual: '🧩', title: 'Rule Breaker', concept: 'Change the game rules.', example: 'Baba Is You, Patrick\'s Parabox' },
+            { id: '5-c7', deck: 5, suit: 'clubs', rank: '7', visual: '📹', title: 'Viral Horror', concept: 'Scary game about streaming.', example: 'Content Warning, Parasocial' },
+            { id: '5-c8', deck: 5, suit: 'clubs', rank: '8', visual: '🚶', title: 'Puzzle Walker', concept: 'Walking Sim + Deep Logic.', example: 'The Witness, Viewfinder, Talos Principle 2' },
+            { id: '5-c9', deck: 5, suit: 'clubs', rank: '9', visual: '🚗', title: 'Drive Survival', concept: 'Station Wagon vs Zone.', example: 'Pacific Drive, Jalopy' },
+            { id: '5-c10', deck: 5, suit: 'clubs', rank: '10', visual: '🧹', title: 'Job Sim', concept: 'Work is fun.', example: 'PowerWash Sim, House Flipper, Hardspace: Shipbreaker' },
+            { id: '5-cj', deck: 5, suit: 'clubs', rank: 'J', visual: '🎲', title: 'Digital Board', concept: 'Party game physics.', example: 'Tabletop Simulator, Pummel Party' },
+            { id: '5-cq', deck: 5, suit: 'clubs', rank: 'Q', visual: '🏫', title: 'Edutainment Horror', concept: 'Kids game gone wrong.', example: 'Baldi\'s Basics, Poppy Playtime, Zoochosis' },
+            { id: '5-ck', deck: 5, suit: 'clubs', rank: 'K', visual: '🎤', title: 'Musical RPG', concept: 'Dialogue is a song.', example: 'Stray Gods, Goodbye Volcano High' },
+            { id: '5-ca', deck: 5, suit: 'clubs', rank: 'A', visual: '🔄', title: 'Idle RPG', concept: 'Game plays itself... mostly.', example: 'Melvor Idle, Loop Hero, Gnorp Apologue' },
+
+            // Joker
+            { id: '5-joker', deck: 5, suit: 'joker', rank: '★', visual: '💾', title: 'Meta Tycoon', concept: 'Simulate the industry.', example: 'Game Dev Story, Game Dev Tycoon' },
+        ];
+
         // --- App Logic ---
         const app = {
             state: {
-                activeDecks: { 1: true, 2: false, 3: false, 4: false },
+                activeDecks: { 1: true, 2: false, 3: false, 4: false, 5: false },
                 currentDeck: [],
                 drawIndex: 0,
                 keptCards: [],
@@ -495,23 +566,23 @@
                         keptCardIds: this.state.keptCards.map(c => c.id),
                         burnedCardIds: this.state.burnedCardIds
                     };
-                    localStorage.setItem('gamedeck_state_v2', JSON.stringify(stateToSave));
+                    localStorage.setItem('gamedeck_state_v3', JSON.stringify(stateToSave));
                 } catch (e) {
                     console.error("Save failed", e);
                 }
             },
 
             loadState() {
-                const json = localStorage.getItem('gamedeck_state_v2');
+                const json = localStorage.getItem('gamedeck_state_v3');
                 if(!json) return false;
                 
                 try {
                     const saved = JSON.parse(json);
                     
-                    const allCards = [...DECK_1, ...DECK_2, ...DECK_3, ...DECK_4];
+                    const allCards = [...DECK_1, ...DECK_2, ...DECK_3, ...DECK_4, ...DECK_5];
                     const cardMap = allCards.reduce((acc, c) => { acc[c.id] = c; return acc; }, {});
 
-                    this.state.activeDecks = saved.activeDecks || { 1: true, 2: false, 3: false, 4: false };
+                    this.state.activeDecks = saved.activeDecks || { 1: true, 2: false, 3: false, 4: false, 5: false };
                     this.state.drawIndex = saved.drawIndex || 0;
                     this.state.burnedCardIds = saved.burnedCardIds || [];
                     
@@ -547,6 +618,7 @@
                 if (this.state.activeDecks[2]) combined = [...combined, ...DECK_2];
                 if (this.state.activeDecks[3]) combined = [...combined, ...DECK_3];
                 if (this.state.activeDecks[4]) combined = [...combined, ...DECK_4];
+                if (this.state.activeDecks[5]) combined = [...combined, ...DECK_5];
                 
                 if(combined.length === 0) {
                     combined = [...DECK_1]; 
@@ -556,9 +628,6 @@
                 // Filter out burned cards
                 combined = combined.filter(c => !this.state.burnedCardIds.includes(c.id));
                 
-                // If all cards are burned/gone, restore them to prevent empty deck crash? 
-                // Or just show empty state? For now, let's assume users won't burn 200 cards.
-                // If they do, let's just restore everything for safety.
                 if (combined.length === 0) {
                     this.state.burnedCardIds = [];
                     // Re-fetch source
@@ -566,6 +635,7 @@
                     if (this.state.activeDecks[2]) combined = [...combined, ...DECK_2];
                     if (this.state.activeDecks[3]) combined = [...combined, ...DECK_3];
                     if (this.state.activeDecks[4]) combined = [...combined, ...DECK_4];
+                    if (this.state.activeDecks[5]) combined = [...combined, ...DECK_5];
                 }
 
                 // Fisher-Yates shuffle
@@ -654,9 +724,6 @@
                 
                 const cardEl = document.getElementById('card-wrapper').firstElementChild;
                 if(cardEl) {
-                    // If manually triggered, animate the current card out first?
-                    // Or just swap instantly with a shuffle animation?
-                    // Let's fade out current card then shuffle in.
                     cardEl.style.transition = 'all 0.2s ease-in';
                     cardEl.style.opacity = '0';
                     cardEl.style.transform = 'scale(0.9)';
@@ -673,10 +740,6 @@
             restoreBurned(id) {
                 this.state.burnedCardIds = this.state.burnedCardIds.filter(bid => bid !== id);
                 this.saveState();
-                
-                // If we restore, we don't necessarily need to add it to current deck immediately,
-                // it will appear next shuffle. Or we can insert it?
-                // For simplicity, it appears next shuffle.
                 this.render();
             },
 
@@ -734,6 +797,12 @@
                     if(c.suit === 'diamonds') return "Faction";
                     if(c.suit === 'clubs') return "Plot Hook";
                 }
+                if (c.deck === 5) {
+                    if(c.suit === 'hearts') return "Action Mashup";
+                    if(c.suit === 'spades') return "Strategy Blend";
+                    if(c.suit === 'diamonds') return "RPG Hybrid";
+                    if(c.suit === 'clubs') return "Vibe Blend";
+                }
                 if(c.suit === 'joker') return "Wildcard";
                 return "";
             },
@@ -743,6 +812,7 @@
                 if(id === 2) return "Mech Deck";
                 if(id === 3) return "Aesthetic Deck";
                 if(id === 4) return "World Deck";
+                if(id === 5) return "Genre Mashup";
                 return "Unknown";
             },
 
@@ -827,7 +897,7 @@
                 }
 
                 // Deck Buttons
-                [1, 2, 3, 4].forEach(id => {
+                [1, 2, 3, 4, 5].forEach(id => {
                     const btn = document.getElementById(`btn-deck-${id}`);
                     if(this.state.activeDecks[id]) {
                         btn.querySelector('.indicator').classList.remove('hidden');
@@ -845,9 +915,6 @@
                     const tpl = document.getElementById('tpl-draw');
                     if(content.innerHTML === '') content.innerHTML = tpl.innerHTML;
                     
-                    // Only full re-render if we moved away or init, otherwise update in place is smoother usually, 
-                    // but for simplicity we replace innerHTML for view switching.
-                    // To support in-place updates during animation, we check if wrapper exists.
                     if (!document.getElementById('card-wrapper')) {
                         content.innerHTML = tpl.innerHTML;
                     }
@@ -861,10 +928,7 @@
                     const wrapper = document.getElementById('card-wrapper');
                     const currentCard = this.state.currentDeck[this.state.drawIndex];
                     
-                    // If isReshuffle, we use the reshuffle entrance animation
                     const animClass = isReshuffle ? 'card-reshuffle-enter' : 'card-enter';
-                    
-                    // Always re-render card content
                     wrapper.innerHTML = this.renderCardHTML(currentCard, animClass); 
                     
                     this.setupGestures();
@@ -910,6 +974,7 @@
                         if (this.state.activeDecks[2]) allActiveCards = [...allActiveCards, ...DECK_2];
                         if (this.state.activeDecks[3]) allActiveCards = [...allActiveCards, ...DECK_3];
                         if (this.state.activeDecks[4]) allActiveCards = [...allActiveCards, ...DECK_4];
+                        if (this.state.activeDecks[5]) allActiveCards = [...allActiveCards, ...DECK_5];
 
                         const cards = allActiveCards.filter(c => c.suit === suit)
                             .sort((a,b) => {
@@ -949,7 +1014,7 @@
                                     return `
                                     <div onclick="${isBurned ? `app.restoreBurned('${c.id}')` : ''}" class="cursor-pointer ${opacityClass} bg-white rounded-lg p-3 shadow-sm border border-slate-200 hover:border-indigo-300 transition-all flex flex-col items-center text-center relative overflow-hidden group">
                                         ${burnedOverlay}
-                                        <div class="absolute top-1 right-2 text-[8px] font-bold uppercase text-slate-300">${c.deck === 1 ? 'CREATIVE' : c.deck === 2 ? 'MECH' : c.deck === 3 ? 'ART' : 'WORLD'}</div>
+                                        <div class="absolute top-1 right-2 text-[8px] font-bold uppercase text-slate-300">${c.deck === 1 ? 'CREATIVE' : c.deck === 2 ? 'MECH' : c.deck === 3 ? 'ART' : c.deck === 4 ? 'WORLD' : 'MASHUP'}</div>
                                         <div class="text-2xl mb-1 z-10">${c.visual}</div>
                                         <div class="text-xs font-bold uppercase z-10 ${colorClass}">${c.rank}</div>
                                         <div class="font-bold text-slate-800 text-sm leading-tight mt-1 z-10">${c.title}</div>
