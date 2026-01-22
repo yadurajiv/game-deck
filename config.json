@@ -1,0 +1,43 @@
+{
+    "title": "GameDeck",
+    "version": "v5.0",
+    "suits": {
+        "hearts":   { "label": "Hearts",   "icon": "heart",    "color": "red" },
+        "spades":   { "label": "Spades",   "icon": "spade",    "color": "slate" },
+        "diamonds": { "label": "Diamonds", "icon": "diamond",  "color": "red" },
+        "clubs":    { "label": "Clubs",    "icon": "club",     "color": "slate" },
+        "joker":    { "label": "Joker",    "icon": "sparkles", "color": "slate" }
+    },
+    "decks": [
+        {
+            "id": "deck_1",
+            "name": "Creative Ways",
+            "file": "data/deck_1_creative.json",
+            "enabled": true
+        },
+        {
+            "id": "deck_2",
+            "name": "Adv. Mechanics",
+            "file": "data/deck_2_mechanics.json",
+            "enabled": true
+        },
+        {
+            "id": "deck_3",
+            "name": "Aesthetics",
+            "file": "data/deck_3_aesthetics.json",
+            "enabled": false
+        },
+        {
+            "id": "deck_4",
+            "name": "World & Setting",
+            "file": "data/deck_4_world.json",
+            "enabled": false
+        },
+        {
+            "id": "deck_5",
+            "name": "Genre Mashup",
+            "file": "data/deck_5_mashup.json",
+            "enabled": false
+        }
+    ]
+}

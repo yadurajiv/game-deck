@@ -135,388 +135,106 @@
 
     <script>
         // ==========================================
-        // CONFIGURATION & CONTENT DATA
+        // APP LOGIC WITH JSON FETCHING
         // ==========================================
-        
-        const APP_CONFIG = {
-            title: "GameDeck",
-            version: "v4.0.1",
-            
-            // Define your suits/categories here. 
-            // The 'id' keys (hearts, spades, etc) must match the 'suit' property in card data.
-            suits: {
-                hearts:   { label: 'Hearts',   icon: 'heart',    color: 'red' },
-                spades:   { label: 'Spades',   icon: 'spade',    color: 'slate' },
-                diamonds: { label: 'Diamonds', icon: 'diamond',  color: 'red' },
-                clubs:    { label: 'Clubs',    icon: 'club',     color: 'slate' },
-                joker:    { label: 'Joker',    icon: 'sparkles', color: 'slate' }
-            },
 
-            // Define your decks here.
-            decks: [
-                {
-                    id: 'deck_1',
-                    name: 'Creative Ways',
-                    description: 'Innovation & Remixes',
-                    themes: { hearts: "Experience", spades: "Mechanics", diamonds: "Dynamics", clubs: "Innovation", joker: "Wildcard" },
-                    cards: [
-                        { suit: 'hearts', rank: '2', visual: '🕹️', title: 'Combine Games', concept: 'Mix aspects from different games.', example: 'Monopoly GO!, Palworld' },
-                        { suit: 'hearts', rank: '3', visual: '🌀', title: 'Mix Elements', concept: 'Blend mechanics for hybrid synergy.', example: 'SSSnaker, Archero' },
-                        { suit: 'hearts', rank: '4', visual: '🌐', title: 'Simplify', concept: 'Simplify mid-core for casuals.', example: 'Free Fire, Brawl Stars' },
-                        { suit: 'hearts', rank: '5', visual: '⚙️', title: 'Improve Concepts', concept: 'Polish unpolished genres.', example: 'Lethal Company, Phasmophobia' },
-                        { suit: 'hearts', rank: '6', visual: '🔄', title: 'Adapt Platform', concept: 'Transfer to new platforms.', example: 'Stumble Guys, Among Us VR' },
-                        { suit: 'hearts', rank: '7', visual: '🤪', title: 'Absurdity', concept: 'Combine the unexpected.', example: 'Palworld, Goat Simulator' },
-                        { suit: 'hearts', rank: '8', visual: '🎥', title: 'Iconic Moments', concept: 'Famous scenes as gameplay.', example: 'SUPERHOT, Uncharted' },
-                        { suit: 'hearts', rank: '9', visual: '📺', title: 'Fake Ads', concept: 'Make fake ads real.', example: 'Project Makeover, Hero Wars' },
-                        { suit: 'hearts', rank: '10', visual: '🏰', title: 'History', concept: 'Rich cultural themes.', example: 'Kingdom Come, Assassin\'s Creed' },
-                        { suit: 'hearts', rank: 'J', visual: '❤️', title: 'Emotions', concept: 'Evoke specific feelings.', example: 'Journey, Spiritfarer' },
-                        { suit: 'hearts', rank: 'Q', visual: '🧩', title: '4th Wall', concept: 'Meta-narratives.', example: 'Stanley Parable, Inscryption' },
-                        { suit: 'hearts', rank: 'K', visual: '🚀', title: 'New Tech', concept: 'Leverage emerging tech.', example: 'Beat Saber, Pokemon GO' },
-                        { suit: 'hearts', rank: 'A', visual: '🌟', title: 'Fantasies', concept: 'Fulfill childhood dreams.', example: 'Sea of Thieves, Sims 4' },
-                        { suit: 'spades', rank: '2', visual: '🛠️', title: 'Game Mods', concept: 'Mods into standalone.', example: 'Dota 2, Counter-Strike' },
-                        { suit: 'spades', rank: '3', visual: '🌍', title: 'Real Life', concept: 'Everyday sensations.', example: 'Papers Please, Unpacking' },
-                        { suit: 'spades', rank: '4', visual: '🔄', title: 'Inversion', concept: 'Flip the norm.', example: 'Choo-Choo Charles, Carrion' },
-                        { suit: 'spades', rank: '5', visual: '🎲', title: 'Tabletop', concept: 'Board games to digital.', example: 'Among Us (Mafia), Baldur\'s Gate 3' },
-                        { suit: 'spades', rank: '6', visual: '🔄', title: 'Role Reversal', concept: 'Control world, not hero.', example: 'Loop Hero, Dungeon Keeper' },
-                        { suit: 'spades', rank: '7', visual: '⏳', title: 'Game Jams', concept: 'Strict constraints.', example: 'Goat Simulator, Superhot' },
-                        { suit: 'spades', rank: '8', visual: '🔧', title: 'Reverse Engineer', concept: 'Fix genre frustrations.', example: 'Stardew Valley, Cities: Skylines' },
-                        { suit: 'spades', rank: '9', visual: '📖', title: 'Proc. Story', concept: 'Generated narrative arcs.', example: 'Wildermyth, Rimworld' },
-                        { suit: 'spades', rank: '10', visual: '🍌', title: 'Physics Comedy', concept: 'Wobbly physics humor.', example: 'Human: Fall Flat, Gang Beasts' },
-                        { suit: 'spades', rank: 'J', visual: '🎵', title: 'Rhythm Action', concept: 'Rhythm in non-music genres.', example: 'Crypt of NecroDancer, Hi-Fi Rush' },
-                        { suit: 'spades', rank: 'Q', visual: '🏭', title: 'Automation', concept: 'Complex engineering.', example: 'Factorio, Satisfactory' },
-                        { suit: 'spades', rank: 'K', visual: '🖼️', title: 'Art Gameplay', concept: 'Visual medium as mechanic.', example: 'Gorogoa, Viewfinder' },
-                        { suit: 'spades', rank: 'A', visual: '🦇', title: 'Audio Nav', concept: 'See with sound.', example: 'Dark Echo, The Vale' },
-                        { suit: 'diamonds', rank: '2', visual: '⚖️', title: 'Asymmetric', concept: 'Teams of different sizes.', example: 'Dead by Daylight, Among Us' },
-                        { suit: 'diamonds', rank: '3', visual: '⏳', title: 'Time Control', concept: 'Rewind/Pause time.', example: 'Braid, Superhot' },
-                        { suit: 'diamonds', rank: '4', visual: '👁️', title: 'Perspective', concept: 'Optical illusions.', example: 'Superliminal, Monument Valley' },
-                        { suit: 'diamonds', rank: '5', visual: '🧠', title: 'Knowledge', concept: 'Player levels up, not char.', example: 'Outer Wilds, Tunic' },
-                        { suit: 'diamonds', rank: '6', visual: '❄️', title: 'Moral Survival', concept: 'Impossible ethical choices.', example: 'Frostpunk, Papers Please' },
-                        { suit: 'diamonds', rank: '7', visual: '💀', title: 'High Lethality', concept: 'One-hit kills.', example: 'Hotline Miami, Ghostrunner' },
-                        { suit: 'diamonds', rank: '8', visual: '🧛', title: 'Reverse Bullet Hell', concept: 'You are the swarm.', example: 'Vampire Survivors, Brotato' },
-                        { suit: 'diamonds', rank: '9', visual: '💻', title: 'UI Narrative', concept: 'Game in an OS.', example: 'Hypnospace Outlaw, Orwell' },
-                        { suit: 'diamonds', rank: '10', visual: '🕰️', title: 'Alt History', concept: 'Change one event.', example: 'Wolfenstein, Fallout' },
-                        { suit: 'diamonds', rank: 'J', visual: '⚡', title: 'Modern Myth', concept: 'Myths with modern vibes.', example: 'Hades, Percy Jackson' },
-                        { suit: 'diamonds', rank: 'Q', visual: '☕', title: 'Cozy', concept: 'Low stakes, high comfort.', example: 'Unpacking, Coffee Talk' },
-                        { suit: 'diamonds', rank: 'K', visual: '🚪', title: 'Liminal Horror', concept: 'Empty, familiar spaces.', example: 'The Exit 8, Poolrooms' },
-                        { suit: 'diamonds', rank: 'A', visual: '⚽', title: 'Sports Hybrid', concept: 'Sport + Absurdity.', example: 'Rocket League, What the Golf?' },
-                        { suit: 'clubs', rank: '2', visual: '🗣️', title: 'Non-Violent', concept: 'Conflict via dialogue.', example: 'Disco Elysium, Undertale' },
-                        { suit: 'clubs', rank: '3', visual: '🏠', title: 'Env. Narrative', concept: 'Story via objects.', example: 'Edith Finch, Gone Home' },
-                        { suit: 'clubs', rank: '4', visual: '🧱', title: 'Destruction', concept: 'Breaking is solving.', example: 'Teardown, Red Faction' },
-                        { suit: 'clubs', rank: '5', visual: '🏗️', title: 'Construction', concept: 'Build tools to solve.', example: 'Besiege, TotK' },
-                        { suit: 'clubs', rank: '6', visual: '📎', title: 'Unfolding Idle', concept: 'Clicker reveals story.', example: 'Universal Paperclips, A Dark Room' },
-                        { suit: 'clubs', rank: '7', visual: '🔴', title: 'Streamer API', concept: 'Chat affects game.', example: 'Cult of the Lamb, Twitch Plays' },
-                        { suit: 'clubs', rank: '8', visual: '⌨️', title: 'Typing', concept: 'Typing as combat.', example: 'Typing of the Dead, Epistory' },
-                        { suit: 'clubs', rank: '9', visual: '🎨', title: 'Color', concept: 'Matching colors mechanics.', example: 'Splatoon, Hue' },
-                        { suit: 'clubs', rank: '10', visual: '🌌', title: 'Gravity', concept: 'Change gravity direction.', example: 'Gravity Rush, Super Mario Galaxy' },
-                        { suit: 'clubs', rank: 'J', visual: '🖥️', title: 'Prog. Logic', concept: 'Write code to automate.', example: 'Baba Is You, Human Resource Machine' },
-                        { suit: 'clubs', rank: 'Q', visual: '📸', title: 'Photography', concept: 'Camera as weapon.', example: 'Pokemon Snap, Fatal Frame' },
-                        { suit: 'clubs', rank: 'K', visual: '🐜', title: 'Living World', concept: 'World runs itself.', example: 'Dwarf Fortress, Rain World' },
-                        { suit: 'clubs', rank: 'A', visual: '🪿', title: 'Stealth Comedy', concept: 'Mischief not murder.', example: 'Untitled Goose Game, Octodad' },
-                        { suit: 'joker', rank: '★', visual: '🎞️', title: 'Nostalgia', concept: 'Draw on beloved past media.', example: 'Cuphead, Shovel Knight' }
-                    ]
-                },
-                {
-                    id: 'deck_2',
-                    name: 'Adv. Mechanics',
-                    description: 'Deep Systems & Logic',
-                    themes: { hearts: "Narrative", spades: "Hardcore", diamonds: "Loops", clubs: "Tech", joker: "Wildcard" },
-                    cards: [
-                        { suit: 'hearts', rank: '2', visual: '🤝', title: 'Companion', concept: 'AI partner bond.', example: 'BioShock Infinite, Last of Us' },
-                        { suit: 'hearts', rank: '3', visual: '⚔️', title: 'Rival', concept: 'Recurring antagonist.', example: 'Pokémon, Yakuza' },
-                        { suit: 'hearts', rank: '4', visual: '👥', title: 'Ensemble', concept: 'Group dynamics.', example: 'Mass Effect, Persona 5' },
-                        { suit: 'hearts', rank: '5', visual: '🤥', title: 'Unreliable', concept: 'Lying narrator.', example: 'Spec Ops, Silent Hill 2' },
-                        { suit: 'hearts', rank: '6', visual: '♾️', title: 'Time Loop', concept: 'Relive and learn.', example: '12 Minutes, Outer Wilds' },
-                        { suit: 'hearts', rank: '7', visual: '🔍', title: 'Whodunit', concept: 'Solve a crime.', example: 'Obra Dinn, Disco Elysium' },
-                        { suit: 'hearts', rank: '8', visual: '💘', title: 'Romance', concept: 'Relationships.', example: 'Stardew Valley, Hades' },
-                        { suit: 'hearts', rank: '9', visual: '🎭', title: 'Tragedy', concept: 'Loss and sacrifice.', example: 'Last of Us 2, RDR2' },
-                        { suit: 'hearts', rank: '10', visual: '🤡', title: 'Satire', concept: 'Social commentary.', example: 'Helldivers 2, GTA V' },
-                        { suit: 'hearts', rank: 'J', visual: '😶', title: 'Silent Hero', concept: 'Player projection.', example: 'Half-Life, Zelda' },
-                        { suit: 'hearts', rank: 'Q', visual: '⚖️', title: 'Moral Gray', concept: 'No good or evil.', example: 'Witcher 3, Fallout New Vegas' },
-                        { suit: 'hearts', rank: 'K', visual: '🌲', title: 'Branching', concept: 'Massive variations.', example: 'Detroit, Baldur\'s Gate 3' },
-                        { suit: 'hearts', rank: 'A', visual: '🎬', title: 'Director AI', concept: 'Dynamic pacing.', example: 'Left 4 Dead 2, Alien Isolation' },
-                        { suit: 'spades', rank: '2', visual: '🃏', title: 'Deckbuilder', concept: 'Card-based combat.', example: 'Slay the Spire, Balatro' },
-                        { suit: 'spades', rank: '3', visual: '🚁', title: 'Extraction', concept: 'High stakes escape.', example: 'Tarkov, Hunt: Showdown' },
-                        { suit: 'spades', rank: '4', visual: '🛡️', title: 'Parry', concept: 'Defense is offense.', example: 'Sekiro, Lies of P' },
-                        { suit: 'spades', rank: '5', visual: '🥊', title: 'Combo', concept: 'Chain attacks.', example: 'Devil May Cry, Hi-Fi Rush' },
-                        { suit: 'spades', rank: '6', visual: '🪝', title: 'Grapple', concept: 'Vertical mobility.', example: 'Spider-Man, Titanfall 2' },
-                        { suit: 'spades', rank: '7', visual: '🦖', title: 'Tamer', concept: 'Capture enemies.', example: 'Palworld, Pokémon' },
-                        { suit: 'spades', rank: '8', visual: '👻', title: 'Possession', concept: 'Control enemies.', example: 'Mario Odyssey, Messiah' },
-                        { suit: 'spades', rank: '9', visual: '🧟', title: 'Horde', concept: 'Overwhelming numbers.', example: 'Days Gone, Vampire Survivors' },
-                        { suit: 'spades', rank: '10', visual: '⏱️', title: 'Speedrun', concept: 'Optimization.', example: 'Neon White, Mirror\'s Edge' },
-                        { suit: 'spades', rank: 'J', visual: '💰', title: 'Heist', concept: 'Plan and execute.', example: 'Payday 2, Monaco' },
-                        { suit: 'spades', rank: 'Q', visual: '🤺', title: 'Duel', concept: '1v1 Spacing.', example: 'Nidhogg, For Honor' },
-                        { suit: 'spades', rank: 'K', visual: '🐜', title: 'Size Shift', concept: 'Scale mechanics.', example: 'Grounded, It Takes Two' },
-                        { suit: 'spades', rank: 'A', visual: '🌑', title: 'Shadow', concept: 'Light stealth.', example: 'Thief, Splinter Cell' },
-                        { suit: 'diamonds', rank: '2', visual: '🔄', title: 'Roguelite', concept: 'Runs with upgrades.', example: 'Hades, Dead Cells' },
-                        { suit: 'diamonds', rank: '3', visual: '🎰', title: 'Gacha', concept: 'Random rewards.', example: 'Genshin Impact, Honkai' },
-                        { suit: 'diamonds', rank: '4', visual: '📈', title: 'Prestige', concept: 'Reset for power.', example: 'Cookie Clicker, Idle Miner' },
-                        { suit: 'diamonds', rank: '5', visual: '⛏️', title: 'Crafting', concept: 'Gather > Craft.', example: 'Minecraft, Valheim' },
-                        { suit: 'diamonds', rank: '6', visual: '💹', title: 'Player Market', concept: 'Trading economy.', example: 'EVE Online, Warframe' },
-                        { suit: 'diamonds', rank: '7', visual: '🦋', title: 'Collection', concept: 'Fill the museum.', example: 'Animal Crossing, Stardew' },
-                        { suit: 'diamonds', rank: '8', visual: '🎟️', title: 'Battle Pass', concept: 'Seasonal tracks.', example: 'Fortnite, Apex Legends' },
-                        { suit: 'diamonds', rank: '9', visual: '✏️', title: 'Level Editor', concept: 'UGC Tools.', example: 'Mario Maker, Roblox' },
-                        { suit: 'diamonds', rank: '10', visual: '📜', title: 'Wiki-Bait', concept: 'Obscure lore.', example: 'Tunic, Elden Ring' },
-                        { suit: 'diamonds', rank: 'J', visual: '📊', title: 'Min-Max', concept: 'Deep stats.', example: 'Path of Exile, Diablo IV' },
-                        { suit: 'diamonds', rank: 'Q', visual: '📅', title: 'Daily', concept: 'One challenge/day.', example: 'Wordle, Daily Runs' },
-                        { suit: 'diamonds', rank: 'K', visual: '📺', title: 'Episodic', concept: 'Released chapters.', example: 'Walking Dead, Deltarune' },
-                        { suit: 'diamonds', rank: 'A', visual: '🕵️', title: 'ARG', concept: 'Reality blending.', example: 'Inscryption, Doki Doki LC' },
-                        { suit: 'clubs', rank: '2', visual: '🔥', title: 'Element', concept: 'Chemistry systems.', example: 'BotW, Divinity OS2' },
-                        { suit: 'clubs', rank: '3', visual: '👽', title: 'Stalker AI', concept: 'Hunting enemy.', example: 'Alien: Isolation, Mr. X' },
-                        { suit: 'clubs', rank: '4', visual: '🕳️', title: 'Deformable', concept: 'Digging terrain.', example: 'Deep Rock Galactic, Minecraft' },
-                        { suit: 'clubs', rank: '5', visual: '🌊', title: 'Fluid', concept: 'Liquid physics.', example: 'Mario Sunshine, Splatoon' },
-                        { suit: 'clubs', rank: '6', visual: '🌀', title: 'Portal', concept: 'Non-Euclidean.', example: 'Portal, Antichamber' },
-                        { suit: 'clubs', rank: '7', visual: '🌗', title: 'Dual World', concept: 'Dimension swap.', example: 'Titanfall 2, Lords of the Fallen' },
-                        { suit: 'clubs', rank: '8', visual: '🚛', title: 'Vehicle Sim', concept: 'Driving physics.', example: 'SnowRunner, BeamNG' },
-                        { suit: 'clubs', rank: '9', visual: '👨‍👩‍👧‍👦', title: 'Crowd', concept: 'Social stealth.', example: 'Hitman, Assassin\'s Creed' },
-                        { suit: 'clubs', rank: '10', visual: '🚗', title: 'Soft Body', concept: 'Realistic crash.', example: 'BeamNG.drive, Wreckfest' },
-                        { suit: 'clubs', rank: 'J', visual: '🎤', title: 'Voice', concept: 'Mic input.', example: 'Lethal Company, Phasmophobia' },
-                        { suit: 'clubs', rank: 'Q', visual: '📍', title: 'GPS', concept: 'Location based.', example: 'Pokemon GO, Monster Hunter Now' },
-                        { suit: 'clubs', rank: 'K', visual: '🧬', title: 'Evolution', concept: 'Procedural life.', example: 'Spore, No Man\'s Sky' },
-                        { suit: 'clubs', rank: 'A', visual: '🌪️', title: 'Weather', concept: 'Dynamic storms.', example: 'Sea of Thieves, Mad Max' },
-                        { suit: 'joker', rank: '★', visual: '📀', title: 'Remaster', concept: 'Modernize classic.', example: 'RE4 Remake, Dead Space' }
-                    ]
-                },
-                {
-                    id: 'deck_3',
-                    name: 'Aesthetics',
-                    description: 'Art, Audio & Vibe',
-                    themes: { hearts: "Visual Style", spades: "Audio", diamonds: "Camera/View", clubs: "Vibe", joker: "Wildcard" },
-                    cards: [
-                        { suit: 'hearts', rank: '2', visual: '👾', title: 'Pixel Art', concept: 'Retro nostalgia or modern crunch.', example: 'Celeste, Stardew Valley' },
-                        { suit: 'hearts', rank: '3', visual: '🔳', title: 'Low Poly', concept: 'PS1 era aesthetics.', example: 'Ultrakill, Valheim' },
-                        { suit: 'hearts', rank: '4', visual: '🖌️', title: 'Cel Shaded', concept: 'Living comic book.', example: 'Borderlands, Hi-Fi Rush' },
-                        { suit: 'hearts', rank: '5', visual: '🌚', title: 'Noir', concept: 'High contrast black & white.', example: 'Limbo, Trek to Yomi' },
-                        { suit: 'hearts', rank: '6', visual: '🎨', title: 'Hand-Drawn', concept: 'Traditional animation frames.', example: 'Cuphead, Hollow Knight' },
-                        { suit: 'hearts', rank: '7', visual: '🌈', title: 'Psychedelic', concept: 'Sensory overload colors.', example: 'Hotline Miami, Cruelty Squad' },
-                        { suit: 'hearts', rank: '8', visual: '🧱', title: 'Voxel', concept: '3D Pixel blocks.', example: 'Minecraft, Teardown' },
-                        { suit: 'hearts', rank: '9', visual: '🩸', title: 'Gothic', concept: 'Dark, ornate, imposing.', example: 'Bloodborne, Darkest Dungeon' },
-                        { suit: 'hearts', rank: '10', visual: '⬜', title: 'Minimalism', concept: 'Clean lines, flat colors.', example: 'Mini Metro, Superhot' },
-                        { suit: 'hearts', rank: 'J', visual: '🖼️', title: 'Watercolor', concept: 'Soft, painted edges.', example: 'Gris, Okami' },
-                        { suit: 'hearts', rank: 'Q', visual: '📺', title: 'CRT Filter', concept: 'Analog signal decay.', example: 'Signalis, Balatro' },
-                        { suit: 'hearts', rank: 'K', visual: '🗿', title: 'Claymation', concept: 'Stop-motion aesthetic.', example: 'Hylics, Harold Halibut' },
-                        { suit: 'hearts', rank: 'A', visual: '📷', title: 'Photoreal', concept: 'Uncanny realism.', example: 'Unrecord, Hellblade II' },
-                        { suit: 'spades', rank: '2', visual: '🎹', title: 'Dynamic Music', concept: 'Music changes with action.', example: 'Doom Eternal, Metal Hellsinger' },
-                        { suit: 'spades', rank: '3', visual: '🔇', title: 'Silence', concept: 'Absence of sound for tension.', example: 'Inside, Dark Souls' },
-                        { suit: 'spades', rank: '4', visual: '👾', title: 'Chiptune', concept: '8-bit constraints.', example: 'Shovel Knight, Celeste' },
-                        { suit: 'spades', rank: '5', visual: '🎻', title: 'Orchestral', concept: 'Epic cinematic score.', example: 'Elden Ring, Halo' },
-                        { suit: 'spades', rank: '6', visual: '🎧', title: 'Binaural 3D', concept: 'Positional audio focus.', example: 'Hellblade, Hunt: Showdown' },
-                        { suit: 'spades', rank: '7', visual: '🔊', title: 'Diegetic', concept: 'Sound comes from in-world.', example: 'Dead Space, Metro Exodus' },
-                        { suit: 'spades', rank: '8', visual: '🗣️', title: 'Narrator', concept: 'Voiceover reacts to play.', example: 'Bastion, Stanley Parable' },
-                        { suit: 'spades', rank: '9', visual: '🥁', title: 'Rhythm Sync', concept: 'SFX match the beat.', example: 'Hi-Fi Rush, Rez' },
-                        { suit: 'spades', rank: '10', visual: '🤫', title: 'ASMR', concept: 'Satisfying clicks/whispers.', example: 'Unpacking, Dorfromantik' },
-                        { suit: 'spades', rank: 'J', visual: '🏭', title: 'Industrial', concept: 'Grinding metal sounds.', example: 'Factorio, Scorn' },
-                        { suit: 'spades', rank: 'Q', visual: '🦗', title: 'Ambient', concept: 'Nature and atmosphere.', example: 'BotW, Skyrim' },
-                        { suit: 'spades', rank: 'K', visual: '💥', title: 'Glitch', concept: 'Audio artifacts/distortion.', example: 'Cyberpunk 2077, Axiom Verge' },
-                        { suit: 'spades', rank: 'A', visual: '🎸', title: 'Adaptive', concept: 'Instru. layers add up.', example: 'Nier Automata, Hades' },
-                        { suit: 'diamonds', rank: '2', visual: '👀', title: 'First Person', concept: 'Through the eyes.', example: 'Call of Duty, Portal' },
-                        { suit: 'diamonds', rank: '3', visual: '📐', title: 'Isometric', concept: '3/4 top-down view.', example: 'Hades, Disco Elysium' },
-                        { suit: 'diamonds', rank: '4', visual: '🏃', title: 'Side Scroller', concept: '2D plane movement.', example: 'Mario, Hollow Knight' },
-                        { suit: 'diamonds', rank: '5', visual: '🚁', title: 'Top-Down', concept: 'Bird\'s eye view.', example: 'Hotline Miami, Factorio' },
-                        { suit: 'diamonds', rank: '6', visual: '🎥', title: 'Fixed Angle', concept: 'Cinematic specific frames.', example: 'Resident Evil 1, God of War 3' },
-                        { suit: 'diamonds', rank: '7', visual: '🥽', title: 'VR', concept: 'Headset immersion.', example: 'Half-Life Alyx, Beat Saber' },
-                        { suit: 'diamonds', rank: '8', visual: '🖥️', title: 'Second Person', concept: 'Watching a screen in-game.', example: 'FNAF, Observation' },
-                        { suit: 'diamonds', rank: '9', visual: '📜', title: 'Text-Only', concept: 'Imagination driven.', example: 'Zork, AI Dungeon' },
-                        { suit: 'diamonds', rank: '10', visual: '🪟', title: 'Split Screen', concept: 'Simultaneous views.', example: 'It Takes Two, Mario Kart' },
-                        { suit: 'diamonds', rank: 'J', visual: '🚫', title: 'UI-less', concept: 'Zero HUD immersion.', example: 'Dead Space, Firewatch' },
-                        { suit: 'diamonds', rank: 'Q', visual: '📹', title: 'CCTV/Bodycam', concept: 'Grainy surveillance lens.', example: 'Observation, Content Warning' },
-                        { suit: 'diamonds', rank: 'K', visual: '🐟', title: 'Fish-eye', concept: 'Distorted wide angle.', example: 'Cruelty Squad, Skate' },
-                        { suit: 'diamonds', rank: 'A', visual: '📱', title: 'Portrait', concept: 'Vertical phone view.', example: 'Clash Royale, Marvel Snap' },
-                        { suit: 'clubs', rank: '2', visual: '☕', title: 'Cozy', concept: 'Safe and warm.', example: 'Stardew Valley, Animal Crossing' },
-                        { suit: 'clubs', rank: '3', visual: '😱', title: 'Horror', concept: 'Dread and panic.', example: 'Amnesia, Outlast' },
-                        { suit: 'clubs', rank: '4', visual: '⚡', title: 'Adrenaline', concept: 'High speed focus.', example: 'Doom, Hotline Miami' },
-                        { suit: 'clubs', rank: '5', visual: '🧘', title: 'Zen', concept: 'Flow state relaxation.', example: 'Tetris Effect, Journey' },
-                        { suit: 'clubs', rank: '6', visual: '😢', title: 'Melancholy', concept: 'Sad but beautiful.', example: 'Gris, Spiritfarer' },
-                        { suit: 'clubs', rank: '7', visual: '🍌', title: 'Slapstick', concept: 'Goofy physicality.', example: 'Fall Guys, Goat Simulator' },
-                        { suit: 'clubs', rank: '8', visual: '🏰', title: 'Epic', concept: 'Grand scale grandeur.', example: 'Elden Ring, God of War' },
-                        { suit: 'clubs', rank: '9', visual: '📦', title: 'Claustrophobic', concept: 'Tight, oppressive spaces.', example: 'Iron Lung, Metroid' },
-                        { suit: 'clubs', rank: '10', visual: '🎞️', title: 'Nostalgic', concept: 'Yearning for the past.', example: 'Shovel Knight, Stranger Things' },
-                        { suit: 'clubs', rank: 'J', visual: '🍄', title: 'Surreal', concept: 'Dream logic weirdness.', example: 'Superliminal, Control' },
-                        { suit: 'clubs', rank: 'Q', visual: '🪨', title: 'Gritty', concept: 'Dirty realism.', example: 'Last of Us, Metro' },
-                        { suit: 'clubs', rank: 'K', visual: '🎠', title: 'Whimsical', concept: 'Playful imagination.', example: 'LBP, Psychonauts' },
-                        { suit: 'clubs', rank: 'A', visual: '✨', title: 'Ethereal', concept: 'Otherworldly divine.', example: 'Journey, Sky: Children of Light' },
-                        { suit: 'joker', rank: '★', visual: '🤡', title: 'Mascot', concept: 'Character-driven brand.', example: 'Mario, Sonic' }
-                    ]
-                },
-                {
-                    id: 'deck_4',
-                    name: 'World & Setting',
-                    description: 'Biomes, Eras & Plots',
-                    themes: { hearts: "Biome", spades: "Era/Tech", diamonds: "Faction", clubs: "Plot Hook", joker: "Wildcard" },
-                    cards: [
-                        { suit: 'hearts', rank: '2', visual: '☁️', title: 'Floating Isles', concept: 'Sky world archipelagos.', example: 'BioShock Infinite, Zelda: TotK' },
-                        { suit: 'hearts', rank: '3', visual: '🌆', title: 'Cyber City', concept: 'Neon rain metropolis.', example: 'Cyberpunk 2077, Stray' },
-                        { suit: 'hearts', rank: '4', visual: '☢️', title: 'Post-Apoc', concept: 'Ruined civilization.', example: 'Fallout, Horizon Zero Dawn' },
-                        { suit: 'hearts', rank: '5', visual: '🦑', title: 'Deep Sea', concept: 'Underwater pressure.', example: 'Subnautica, Dave the Diver' },
-                        { suit: 'hearts', rank: '6', visual: '🛰️', title: 'Space Station', concept: 'Technological isolation.', example: 'Prey, Among Us' },
-                        { suit: 'hearts', rank: '7', visual: '🕳️', title: 'Subterranean', concept: 'Underground networks.', example: 'Hollow Knight, Metro' },
-                        { suit: 'hearts', rank: '8', visual: '🌌', title: 'Infinite Void', concept: 'Empty space/nothingness.', example: 'Outer Wilds, No Man\'s Sky' },
-                        { suit: 'hearts', rank: '9', visual: '🌳', title: 'Living Forest', concept: 'Nature is sentient.', example: 'Ori, Darkwood' },
-                        { suit: 'hearts', rank: '10', visual: '🏜️', title: 'Wasteland', concept: 'Harsh desert survival.', example: 'Mad Max, Dune' },
-                        { suit: 'hearts', rank: 'J', visual: '⚙️', title: 'Clockwork', concept: 'Inside a giant machine.', example: 'Dishonored 2, Machinarium' },
-                        { suit: 'hearts', rank: 'Q', visual: '🍬', title: 'Candy Land', concept: 'Edible landscape.', example: 'Cuphead, Fall Guys' },
-                        { suit: 'hearts', rank: 'K', visual: '💤', title: 'Dreamscape', concept: 'Logic-defying mind.', example: 'Psychonauts, Omori' },
-                        { suit: 'hearts', rank: 'A', visual: '👾', title: 'Glitch World', concept: 'Code is breaking down.', example: 'Axiom Verge, Pony Island' },
-                        { suit: 'spades', rank: '2', visual: '🚂', title: 'Steampunk', concept: 'Brass and steam.', example: 'BioShock, Frostpunk' },
-                        { suit: 'spades', rank: '3', visual: '🦴', title: 'Stone Age', concept: 'Primal survival.', example: 'Far Cry Primal, Ancestors' },
-                        { suit: 'spades', rank: '4', visual: '🚀', title: 'Far Future', concept: 'Type III civilization.', example: 'Halo, Mass Effect' },
-                        { suit: 'spades', rank: '5', visual: '📼', title: '1980s', concept: 'Neon retro nostalgia.', example: 'Hotline Miami, GTA Vice City' },
-                        { suit: 'spades', rank: '6', visual: '🏰', title: 'Medieval', concept: 'Swords and castles.', example: 'Witcher, Skyrim' },
-                        { suit: 'spades', rank: '7', visual: '🏯', title: 'Feudal Japan', concept: 'Samurai and mythology.', example: 'Sekiro, Ghost of Tsushima' },
-                        { suit: 'spades', rank: '8', visual: '🤠', title: 'Wild West', concept: 'Outlaws and frontiers.', example: 'Red Dead, Weird West' },
-                        { suit: 'spades', rank: '9', visual: '🕵️', title: 'Cold War', concept: 'Espionage and tension.', example: 'MGS 3, CoD Black Ops' },
-                        { suit: 'spades', rank: '10', visual: '☀️', title: 'Solar Punk', concept: 'Green utopia technology.', example: 'Terra Nil, Overwatch' },
-                        { suit: 'spades', rank: 'J', visual: '⛽', title: 'Dieselpunk', concept: 'Gritty combustion tech.', example: 'Wolfenstein, Iron Harvest' },
-                        { suit: 'spades', rank: 'Q', visual: '🏺', title: 'Mythic Age', concept: 'Gods walk the earth.', example: 'God of War, Hades' },
-                        { suit: 'spades', rank: 'K', visual: '🎩', title: 'Victorian', concept: 'Gaslight and cobblestone.', example: 'Bloodborne, Sherlock Holmes' },
-                        { suit: 'spades', rank: 'A', visual: '🧠', title: 'Singularity', concept: 'AI transcendence.', example: 'System Shock, SOMA' },
-                        { suit: 'diamonds', rank: '2', visual: '🧠', title: 'Hive Mind', concept: 'One shared consciousness.', example: 'The Flood, Tyranids' },
-                        { suit: 'diamonds', rank: '3', visual: '🏢', title: 'Megacorp', concept: 'Profit over people.', example: 'Arasaka, Shinra' },
-                        { suit: 'diamonds', rank: '4', visual: '🕯️', title: 'The Cult', concept: 'Fanatical devotion.', example: 'Far Cry 5, Resident Evil 4' },
-                        { suit: 'diamonds', rank: '5', visual: '✊', title: 'Resistance', concept: 'Underdogs fighting back.', example: 'XCOM, Half-Life 2' },
-                        { suit: 'diamonds', rank: '6', visual: '🤖', title: 'AI Gods', concept: 'Machines rule man.', example: 'Matrix, Horizon Zero Dawn' },
-                        { suit: 'diamonds', rank: '7', visual: '🪓', title: 'Barbarians', concept: 'Chaos and strength.', example: 'Mad Max, Warhammer Orks' },
-                        { suit: 'diamonds', rank: '8', visual: '🎓', title: 'Academy', concept: 'Knowledge seekers.', example: 'Hogwarts, Fire Emblem' },
-                        { suit: 'diamonds', rank: '9', visual: '📜', title: 'The Guild', concept: 'Professional network.', example: 'Skyrim Thieves, Witcher' },
-                        { suit: 'diamonds', rank: '10', visual: '👑', title: 'The Royals', concept: 'Decadent rulers.', example: 'Dishonored, Fable' },
-                        { suit: 'diamonds', rank: 'J', visual: '💰', title: 'Bandits', concept: 'Lawless opportunists.', example: 'Borderlands, Fallout Raiders' },
-                        { suit: 'diamonds', rank: 'Q', visual: '🏛️', title: 'Ancients', concept: 'Precursor civilization.', example: 'Forerunners, Zonai' },
-                        { suit: 'diamonds', rank: 'K', visual: '🧬', title: 'Mutants', concept: 'Biologically altered.', example: 'X-Men, Fallout Ghouls' },
-                        { suit: 'diamonds', rank: 'A', visual: '🦾', title: 'Cyborgs', concept: 'Man machine hybrids.', example: 'Deus Ex, Cyberpunk' },
-                        { suit: 'clubs', rank: '2', visual: '📜', title: 'Prophecy', concept: 'Chosen one destiny.', example: 'Zelda, Morrowind' },
-                        { suit: 'clubs', rank: '3', visual: '💎', title: 'The Heist', concept: 'Steal the object.', example: 'GTA V, Payday' },
-                        { suit: 'clubs', rank: '4', visual: '🏃', title: 'The Escape', concept: 'Get out alive.', example: 'Portal, Hades' },
-                        { suit: 'clubs', rank: '5', visual: '😡', title: 'Revenge', concept: 'Avenge the fallen.', example: 'God of War, Last of Us 2' },
-                        { suit: 'clubs', rank: '6', visual: '🕵️', title: 'Mystery', concept: 'Find the truth.', example: 'Outer Wilds, Her Story' },
-                        { suit: 'clubs', rank: '7', visual: '🏆', title: 'Tournament', concept: 'Prove you are best.', example: 'Mortal Kombat, Apex Legends' },
-                        { suit: 'clubs', rank: '8', visual: '🚩', title: 'Colonization', concept: 'Tame the wild.', example: 'Factorio, Rimworld' },
-                        { suit: 'clubs', rank: '9', visual: '⛺', title: 'Survival', concept: 'Endure the elements.', example: 'The Long Dark, Don\'t Starve' },
-                        { suit: 'clubs', rank: '10', visual: '⚔️', title: 'The War', concept: 'Turn the tide.', example: 'Call of Duty, Helldivers' },
-                        { suit: 'clubs', rank: 'J', visual: '🧭', title: 'Discovery', concept: 'Map the unknown.', example: 'No Man\'s Sky, Subnautica' },
-                        { suit: 'clubs', rank: 'Q', visual: '🦠', title: 'Corruption', concept: 'Stop the spread.', example: 'Terraria, Horizon' },
-                        { suit: 'clubs', rank: 'K', visual: '🔁', title: 'The Loop', concept: 'Break the cycle.', example: 'Deathloop, Returnal' },
-                        { suit: 'clubs', rank: 'A', visual: '🕯️', title: 'Sacrifice', concept: 'Give up everything.', example: 'Dark Souls, Hellblade' },
-                        { suit: 'joker', rank: '★', visual: '🌍', title: 'Open World', concept: 'Go anywhere.', example: 'Breath of the Wild, Elden Ring' }
-                    ]
-                },
-                {
-                    id: 'deck_5',
-                    name: 'Genre Mashup',
-                    description: 'Modern Trends',
-                    themes: { hearts: "Action Mashup", spades: "Strategy Blend", diamonds: "RPG Hybrid", clubs: "Vibe Blend", joker: "Wildcard" },
-                    cards: [
-                        { suit: 'hearts', rank: '2', visual: '🎸', title: 'Rhythm FPS', concept: 'Shoot on the beat.', example: 'Metal Hellsinger, Hi-Fi Rush' },
-                        { suit: 'hearts', rank: '3', visual: '🗡️', title: 'Melee Royale', concept: 'Battle Royale with swords.', example: 'Naraka, Rumbleverse' },
-                        { suit: 'hearts', rank: '4', visual: '🃏', title: 'Card Shooter', concept: 'Deckbuilding meets FPS.', example: 'Neon White, Friends vs Friends' },
-                        { suit: 'hearts', rank: '5', visual: '🧛', title: 'Survivors-like', concept: 'Bullet Hell + Idle stats.', example: 'Vampire Survivors, Brotato' },
-                        { suit: 'hearts', rank: '6', visual: '🌾', title: 'Action Farm', concept: 'Side-scrolling combat + Rice.', example: 'Sakuna, Dave the Diver' },
-                        { suit: 'hearts', rank: '7', visual: '🥊', title: 'Fighting RPG', concept: 'Street Fighter open world.', example: 'SF6 World Tour' },
-                        { suit: 'hearts', rank: '8', visual: '📸', title: 'Perspective Puzzle', concept: 'FPS mechanics solve logic.', example: 'Viewfinder, Superliminal' },
-                        { suit: 'hearts', rank: '9', visual: '🎥', title: 'Extraction Horror', concept: 'Get footage, get out.', example: 'Content Warning, Lethal Company' },
-                        { suit: 'hearts', rank: '10', visual: '🛣️', title: 'MOBA Shooter', concept: 'Lanes + Aiming.', example: 'Deadlock, Overwatch 2' },
-                        { suit: 'hearts', rank: 'J', visual: '🥷', title: 'Stealth Tactics', concept: 'RTS view + Ninja stealth.', example: 'Shadow Gambit, Desperados 3' },
-                        { suit: 'hearts', rank: 'Q', visual: '🏃', title: 'Platform Royale', concept: 'Wipeout course + PvP.', example: 'Fall Guys, Stumble Guys' },
-                        { suit: 'hearts', rank: 'K', visual: '🕵️', title: 'Social Shooter', concept: 'Spy vs Spy deduction.', example: 'Deceive Inc, The Finals' },
-                        { suit: 'hearts', rank: 'A', visual: '🔫', title: 'Roguelite FPS', concept: 'Run, Gun, Die, Repeat.', example: 'Gunfire Reborn, Roboquest' },
-                        { suit: 'spades', rank: '2', visual: '⛈️', title: 'Roguelite City', concept: 'Build a city against storms.', example: 'Against the Storm, Ratopia' },
-                        { suit: 'spades', rank: '3', visual: '🏭', title: 'Factory Defense', concept: 'Automation + Tower Defense.', example: 'Factorio, Riftbreaker' },
-                        { suit: 'spades', rank: '4', visual: '🏜️', title: 'RTS 4X', concept: 'Grand scale in real time.', example: 'Dune: Spice Wars, Sins 2' },
-                        { suit: 'spades', rank: '5', visual: '❄️', title: 'Narrative Colony', concept: 'Survival Sim + Moral Story.', example: 'Frostpunk 2, Rimworld' },
-                        { suit: 'spades', rank: '6', visual: '🍣', title: 'Manage & Hunt', concept: 'Day: Action, Night: Tycoon.', example: 'Dave the Diver, Cult of the Lamb' },
-                        { suit: 'spades', rank: '7', visual: '🏹', title: 'Action TD', concept: 'Shooter + Tower Defense.', example: 'Orcs Must Die 3, Dome Keeper' },
-                        { suit: 'spades', rank: '8', visual: '♟️', title: 'Horror Tactics', concept: 'Turn-based dread.', example: 'Othercide, Darkest Dungeon 2' },
-                        { suit: 'spades', rank: '9', visual: '📦', title: 'Cozy Puzzle', concept: 'Organizing as gameplay.', example: 'Unpacking, Wilmot\'s Warehouse' },
-                        { suit: 'spades', rank: '10', visual: '🔫', title: 'Pal-Like', concept: 'Monster Taming + Guns/Survival.', example: 'Palworld, Craftopia' },
-                        { suit: 'spades', rank: 'J', visual: '🃏', title: 'Card Strategy', concept: '4X/RTS simplified to cards.', example: 'Songs of Silence, Dune Imperium' },
-                        { suit: 'spades', rank: 'Q', visual: '🎒', title: 'Inventory Battler', concept: 'Tetris inventory PvP.', example: 'Backpack Battles' },
-                        { suit: 'spades', rank: 'K', visual: '🌿', title: 'Reverse City', concept: 'Build nature, remove city.', example: 'Terra Nil, Cloud Gardens' },
-                        { suit: 'spades', rank: 'A', visual: '🪓', title: 'Voxel RPG', concept: 'Minecraft + Dark Souls/Zelda.', example: 'Enshrouded, Valheim' },
-                        { suit: 'diamonds', rank: '2', visual: '💍', title: 'Open Souls', concept: 'Souls combat in open world.', example: 'Elden Ring, Lords of the Fallen' },
-                        { suit: 'diamonds', rank: '3', visual: '🐣', title: 'Metroid-Tamer', concept: 'Platforming with pets.', example: 'Monster Sanctuary, Cassette Beasts' },
-                        { suit: 'diamonds', rank: '4', visual: '⭐', title: 'Active Turn', concept: 'Turn-based + Timing hits.', example: 'Sea of Stars, Yakuza: Like a Dragon' },
-                        { suit: 'diamonds', rank: '5', visual: '🎰', title: 'Poker Rogue', concept: 'Gambling mechanics used for combat.', example: 'Balatro, Dungeons & Degenerate Gamblers' },
-                        { suit: 'diamonds', rank: '6', visual: '⛳', title: 'Sports RPG', concept: 'Save the world via Golf.', example: 'Sports Story, Dodgeball Academia' },
-                        { suit: 'diamonds', rank: '7', visual: '🎱', title: 'Physics RPG', concept: 'Pachinko/Pinball damage.', example: 'Peglin, Creature in the Well' },
-                        { suit: 'diamonds', rank: '8', visual: '🏰', title: 'Dungeon Royale', concept: 'PvPvE dungeon crawler.', example: 'Dark and Darker, Dungeonborne' },
-                        { suit: 'diamonds', rank: '9', visual: '🏡', title: 'Cozy MMO', concept: 'WoW without the war.', example: 'Palia, Sky: Children of Light' },
-                        { suit: 'diamonds', rank: '10', visual: '🦾', title: 'Shooter RPG', concept: 'Deep RPG stats in FPS.', example: 'Cyberpunk 2077, Starfield' },
-                        { suit: 'diamonds', rank: 'J', visual: '🎲', title: 'Dating CRPG', concept: 'Hardcore D&D + Romance.', example: 'Baldur\'s Gate 3, Boyfriend Dungeon' },
-                        { suit: 'diamonds', rank: 'Q', visual: '🎲', title: 'Dice Rogue', concept: 'Yahtzee as combat.', example: 'Dicey Dungeons, Slice & Dice' },
-                        { suit: 'diamonds', rank: 'K', visual: '💰', title: 'Shopkeeper RPG', concept: 'Run the item shop.', example: 'Moonlighter, Potionomics' },
-                        { suit: 'diamonds', rank: 'A', visual: '♟️', title: 'Social Tactics', concept: 'Grid combat + Hangouts.', example: 'Persona 5 Tactica, Marvel Midnight Suns' },
-                        { suit: 'clubs', rank: '2', visual: '🎣', title: 'Eldritch Fish', concept: 'Relaxing fishing + Horror.', example: 'Dredge, Dave the Diver' },
-                        { suit: 'clubs', rank: '3', visual: '🍳', title: 'Cooking Rogue', concept: 'Restaurant chaos run.', example: 'PlateUp!, Overcooked' },
-                        { suit: 'clubs', rank: '4', visual: '📖', title: 'VN Strategy', concept: 'Novel + Grid Combat.', example: 'Digimon Survive, 13 Sentinels' },
-                        { suit: 'clubs', rank: '5', visual: '⌨️', title: 'Typing Exorcism', concept: 'Bullet hell + Typing.', example: 'The Textorcist, Epistory' },
-                        { suit: 'clubs', rank: '6', visual: '🧩', title: 'Rule Breaker', concept: 'Change the game rules.', example: 'Baba Is You, Patrick\'s Parabox' },
-                        { suit: 'clubs', rank: '7', visual: '📹', title: 'Viral Horror', concept: 'Scary game about streaming.', example: 'Content Warning, Parasocial' },
-                        { suit: 'clubs', rank: '8', visual: '🚶', title: 'Puzzle Walker', concept: 'Walking Sim + Deep Logic.', example: 'The Witness, Talos Principle 2' },
-                        { suit: 'clubs', rank: '9', visual: '🚗', title: 'Drive Survival', concept: 'Station Wagon vs Zone.', example: 'Pacific Drive, Jalopy' },
-                        { suit: 'clubs', rank: '10', visual: '🧹', title: 'Job Sim', concept: 'Work is fun.', example: 'PowerWash Sim, Hardspace: Shipbreaker' },
-                        { suit: 'clubs', rank: 'J', visual: '🎲', title: 'Digital Board', concept: 'Party game physics.', example: 'Tabletop Simulator, Pummel Party' },
-                        { suit: 'clubs', rank: 'Q', visual: '🏫', title: 'Edutainment Horror', concept: 'Kids game gone wrong.', example: 'Baldi\'s Basics, Poppy Playtime' },
-                        { suit: 'clubs', rank: 'K', visual: '🎤', title: 'Musical RPG', concept: 'Dialogue is a song.', example: 'Stray Gods, Goodbye Volcano High' },
-                        { suit: 'clubs', rank: 'A', visual: '🔄', title: 'Idle RPG', concept: 'Game plays itself... mostly.', example: 'Melvor Idle, Loop Hero' },
-                        { suit: 'joker', rank: '★', visual: '💾', title: 'Meta Tycoon', concept: 'Simulate the industry.', example: 'Game Dev Story, Game Dev Tycoon' }
-                    ]
-                }
-            ]
-        };
-
-        // ==========================================
-        // APP LOGIC
-        // ==========================================
+        let APP_CONFIG = null; // Will be loaded from config.json
 
         const app = {
             state: {
-                activeDeckIds: {}, // Keyed by deck ID (e.g., 'deck_1': true)
+                activeDeckIds: {}, 
                 currentDeck: [],
                 drawIndex: 0,
                 keptCards: [],
                 burnedCardIds: [],
                 view: 'draw',
                 animating: false,
-                mobileMenuOpen: false
+                mobileMenuOpen: false,
+                loading: true,
+                error: null
             },
 
-            init() {
-                // Set titles
-                document.getElementById('app-title').innerText = APP_CONFIG.title;
-                document.getElementById('app-version').innerText = APP_CONFIG.version;
+            async init() {
+                try {
+                    // 1. Fetch Config
+                    const configRes = await fetch('config.json');
+                    if (!configRes.ok) throw new Error('Could not load config.json');
+                    APP_CONFIG = await configRes.json();
 
-                this.renderDeckToggles();
+                    // Set titles
+                    document.getElementById('app-title').innerText = APP_CONFIG.title;
+                    document.getElementById('app-version').innerText = APP_CONFIG.version;
 
-                // Load State
-                const loaded = this.loadState();
-                
-                // Default to first deck if nothing active
-                if (!loaded || Object.keys(this.state.activeDeckIds).length === 0) {
-                    this.state.activeDeckIds = { [APP_CONFIG.decks[0].id]: true };
-                    this.shuffleDecks();
-                } else {
-                    // Filter out burned cards
-                    if (this.state.burnedCardIds.length > 0) {
-                        this.state.currentDeck = this.state.currentDeck.filter(c => !this.state.burnedCardIds.includes(c.id));
-                        if(this.state.currentDeck.length === 0) this.shuffleDecks();
+                    // 2. Fetch Decks
+                    await this.loadDecks();
+
+                    // 3. Render UI
+                    this.renderDeckToggles();
+                    
+                    // 4. Initialize State
+                    const loaded = this.loadState();
+                    if (!loaded || Object.keys(this.state.activeDeckIds).length === 0) {
+                        // Default: activate first enabled deck found
+                        const firstDeck = APP_CONFIG.decks.find(d => d.enabled);
+                        if (firstDeck) {
+                            this.state.activeDeckIds = { [firstDeck.id]: true };
+                            this.shuffleDecks();
+                        }
+                    } else {
+                        // Clean burned cards
+                        if (this.state.burnedCardIds.length > 0) {
+                            this.state.currentDeck = this.state.currentDeck.filter(c => !this.state.burnedCardIds.includes(c.id));
+                            if(this.state.currentDeck.length === 0) this.shuffleDecks();
+                        }
                     }
+
+                    this.state.loading = false;
+                    this.render();
+                    this.setupGestures();
+
+                } catch (e) {
+                    console.error("Init failed", e);
+                    this.state.error = "Failed to load game data. Ensure you are running this on a local server (e.g., Live Server), not directly from file://.";
+                    this.render();
                 }
-                
-                this.render();
-                this.setupGestures();
+            },
+
+            async loadDecks() {
+                // Iterate through decks in config and fetch their data
+                // We will attach the loaded 'cards' array directly to the config object in memory
+                const fetchPromises = APP_CONFIG.decks.map(async (deck) => {
+                    if (!deck.file) return; 
+                    try {
+                        const res = await fetch(deck.file);
+                        if(res.ok) {
+                            const data = await res.json();
+                            deck.cards = data.cards; // Attach cards to config
+                            deck.themes = data.themes;
+                            deck.description = data.description;
+                        } else {
+                            console.warn(`Failed to load deck file: ${deck.file}`);
+                            deck.cards = []; // Empty fallback
+                        }
+                    } catch (err) {
+                        console.warn(`Error fetching ${deck.file}`, err);
+                        deck.cards = [];
+                    }
+                });
+
+                await Promise.all(fetchPromises);
             },
 
             // --- Helper: Generate IDs for Cards on Runtime ---
-            // This ensures every card has a unique ID based on its deck and properties
             flattenDeckData() {
-                // We don't store flattened data permanently to allow config changes to flow through
-                // But we need a lookup map.
+                if (!APP_CONFIG) return [];
                 let allCards = [];
                 APP_CONFIG.decks.forEach(deck => {
-                    deck.cards.forEach(card => {
-                        // Create a stable ID: deckId-suit-rank
-                        const id = `${deck.id}-${card.suit}-${card.rank}`;
-                        // Attach deck ID metadata to the card object copy
-                        allCards.push({ ...card, id: id, _deckId: deck.id });
-                    });
+                    if (deck.cards && deck.cards.length > 0) {
+                        deck.cards.forEach(card => {
+                            const id = `${deck.id}-${card.suit}-${card.rank}`;
+                            allCards.push({ ...card, id: id, _deckId: deck.id });
+                        });
+                    }
                 });
                 return allCards;
             },
@@ -537,17 +255,17 @@
                         keptCardIds: this.state.keptCards.map(c => c.id),
                         burnedCardIds: this.state.burnedCardIds
                     };
-                    localStorage.setItem('gamedeck_state_v4', JSON.stringify(stateToSave));
+                    localStorage.setItem('gamedeck_state_v5', JSON.stringify(stateToSave));
                 } catch (e) { console.error("Save failed", e); }
             },
 
             loadState() {
-                const json = localStorage.getItem('gamedeck_state_v4');
+                const json = localStorage.getItem('gamedeck_state_v5');
                 if(!json) return false;
                 
                 try {
                     const saved = JSON.parse(json);
-                    const cardMap = this.getCardMap();
+                    const cardMap = this.getCardMap(); // Now relies on loaded config
 
                     this.state.activeDeckIds = saved.activeDeckIds || {};
                     this.state.drawIndex = saved.drawIndex || 0;
@@ -572,9 +290,8 @@
 
             shuffleDecks() {
                 let combined = [];
-                const cardMap = this.getCardMap(); // Get cards with generated IDs and meta
+                const cardMap = this.getCardMap();
 
-                // Gather cards from active decks
                 Object.keys(this.state.activeDeckIds).forEach(deckId => {
                     if (this.state.activeDeckIds[deckId]) {
                         const deckCards = Object.values(cardMap).filter(c => c._deckId === deckId);
@@ -583,20 +300,19 @@
                 });
 
                 if(combined.length === 0) {
-                    // Fallback to first deck
-                    const firstDeckId = APP_CONFIG.decks[0].id;
-                    this.state.activeDeckIds[firstDeckId] = true;
-                    combined = Object.values(cardMap).filter(c => c._deckId === firstDeckId);
+                    // Fallback to first enabled deck
+                    const firstDeck = APP_CONFIG.decks.find(d => d.enabled);
+                    if(firstDeck) {
+                        this.state.activeDeckIds[firstDeck.id] = true;
+                        combined = Object.values(cardMap).filter(c => c._deckId === firstDeck.id);
+                    }
                 }
 
-                // Filter burn
                 combined = combined.filter(c => !this.state.burnedCardIds.includes(c.id));
 
-                // Restoration fallback
                 if (combined.length === 0) {
                     this.state.burnedCardIds = [];
-                    // Refetch
-                    Object.keys(this.state.activeDeckIds).forEach(deckId => {
+                     Object.keys(this.state.activeDeckIds).forEach(deckId => {
                          if (this.state.activeDeckIds[deckId]) {
                             const deckCards = Object.values(cardMap).filter(c => c._deckId === deckId);
                             combined = [...combined, ...deckCards];
@@ -604,7 +320,6 @@
                     });
                 }
 
-                // Fisher-Yates
                 for (let i = combined.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [combined[i], combined[j]] = [combined[j], combined[i]];
@@ -619,7 +334,6 @@
                 const newState = !this.state.activeDeckIds[id];
                 const newActiveIds = { ...this.state.activeDeckIds, [id]: newState };
                 
-                // Prevent disabling all
                 if (!Object.values(newActiveIds).some(Boolean)) return;
 
                 this.state.activeDeckIds = newActiveIds;
@@ -718,17 +432,19 @@
 
             // --- Display Helpers ---
             getDeckConfig(deckId) {
+                if (!APP_CONFIG) return {};
                 return APP_CONFIG.decks.find(d => d.id === deckId) || {};
             },
             
             getSuitConfig(suitKey) {
+                if (!APP_CONFIG) return { icon: 'circle', color: 'slate' };
                 return APP_CONFIG.suits[suitKey] || { label: suitKey, icon: 'circle', color: 'slate' };
             },
 
             // --- HTML Generators ---
             renderDeckToggles() {
                 const container = document.getElementById('deck-toggle-list');
-                if(!container) return;
+                if(!container || !APP_CONFIG) return;
                 
                 container.innerHTML = APP_CONFIG.decks.map(deck => `
                     <button onclick="app.toggleDeck('${deck.id}')" id="btn-deck-${deck.id}" class="w-full flex items-center justify-between p-3 md:p-2 rounded border text-sm border-slate-700 text-slate-500 transition-colors">
@@ -747,8 +463,7 @@
                 const textColor = isRed ? 'text-red-600' : 'text-slate-800';
                 const borderColor = isRed ? 'border-red-200' : 'border-slate-200';
                 const bgGradient = isRed ? 'from-red-50 to-white' : 'from-slate-50 to-white';
-                const iconColor = isRed ? 'text-red-500' : 'text-slate-700'; // For Gallery/smaller icons
-
+                
                 return `
                 <div class="w-full h-full rounded-2xl shadow-2xl border-4 ${borderColor} bg-gradient-to-br ${bgGradient} flex flex-col p-4 relative overflow-hidden select-none bg-white ${animationClass}">
                     <div class="absolute top-0 left-0 right-0 flex justify-center pt-2">
@@ -781,6 +496,23 @@
             render(isReshuffle = false) {
                 const content = document.getElementById('main-content');
                 const sidebar = document.getElementById('sidebar-content');
+
+                // Error State
+                if (this.state.error) {
+                    content.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center p-8">
+                        <i data-lucide="alert-triangle" class="w-12 h-12 text-red-500 mb-4"></i>
+                        <h2 class="text-xl font-bold text-slate-800 mb-2">Setup Required</h2>
+                        <p class="text-slate-600 max-w-md">${this.state.error}</p>
+                    </div>`;
+                    lucide.createIcons();
+                    return;
+                }
+
+                // Loading State
+                if (this.state.loading) {
+                    content.innerHTML = `<div class="flex items-center justify-center h-full"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div></div>`;
+                    return;
+                }
                 
                 // Sidebar & Mobile Menu State
                 if (this.state.mobileMenuOpen) {
@@ -861,9 +593,6 @@
                     content.innerHTML = tpl.innerHTML;
                     const gallery = document.getElementById('gallery-content');
                     
-                    // Generate Gallery by active decks first, or grouped by Suit? 
-                    // Previous version was grouped by Suit across all decks. Let's maintain that but dynamic.
-                    
                     // Create map of active cards
                     const cardMap = this.getCardMap();
                     let allActiveCards = [];
@@ -878,7 +607,6 @@
                         const suitConf = APP_CONFIG.suits[suitKey];
                         const cards = allActiveCards.filter(c => c.suit === suitKey)
                             .sort((a,b) => {
-                                // Simple rank sort logic
                                 const order = ['2','3','4','5','6','7','8','9','10','J','Q','K','A','★'];
                                 return order.indexOf(a.rank) - order.indexOf(b.rank);
                             });
@@ -928,8 +656,6 @@
                 const wrapper = document.getElementById('card-wrapper');
                 if(!wrapper) return;
                 
-                // Remove old listeners? The wrapper is often re-created, so adding new ones is generally fine 
-                // as long as we don't leak memory in SPA. Here we rely on innerHTML replacement clearing them.
                 wrapper.addEventListener('touchstart', (e) => {
                     this.touchEnd = null;
                     this.touchStart = { x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY };
